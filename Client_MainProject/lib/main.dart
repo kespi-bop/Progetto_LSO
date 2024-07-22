@@ -128,26 +128,31 @@ class _CatalogPageState extends State<CatalogPage> {
   }
 
   Future<void> possoEntrareNelSupermercato() async {
+    bool entrato = false;
     try {
       // Connessione al server
       Socket socket = await Socket.connect(serverAddress, serverPort);
-      socket.write('cliente:${widget.id}:ingresso');
-      socket.listen((List<int> event) {
-        String response = String.fromCharCodes(event);
+      while (!entrato) {
+        socket.write('cliente:${widget.id}:ingresso');
+        socket.listen((List<int> event) {
+          String response = String.fromCharCodes(event);
 
-        print(response);
-        if (response.contains("ID_cliente")) {
-          String data = response.substring(
-              response.indexOf("ID_cliente:") + "ID_cliente:".length);
-          String posizione = data.split(':')[1];
-          print('il cliente ' + widget.id + ' è alla posizione ' + posizione);
-          if (posizione == '0' || posizione == "0\n") {
-            print('il cliente' + widget.id + 'è il prossimo a entrare');
-            socket.close();
-            entraNelSupermercato();
+          print(response);
+          if (response.contains("ID_cliente")) {
+            String data = response.substring(
+                response.indexOf("ID_cliente:") + "ID_cliente:".length);
+            String posizione = data.split(':')[1];
+            print('il cliente ' + widget.id + ' è alla posizione ' + posizione);
+            if (posizione == '0' || posizione == "0\n") {
+              print('il cliente' + widget.id + 'è il prossimo a entrare');
+              socket.close();
+              entrato = true;
+              entraNelSupermercato();
+            }
           }
-        }
-      });
+        });
+        sleep(Duration(seconds: 5));
+      }
     } catch (e) {
       print('NON POSSO ENTRARE');
       print('Error: $e');
