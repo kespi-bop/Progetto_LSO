@@ -1,0 +1,48 @@
+#ifndef VARIABILE_C
+#define VARIABILE_C 10
+#endif
+
+#ifndef VARIABILE_E
+#define VARIABILE_E 3
+#endif
+
+#ifndef N_CASSE
+#define N_CASSE 2
+#endif
+
+#ifndef TEMPO_CASSIERE
+#define TEMPO_CASSIERE 5
+#endif
+
+#ifndef TEMPO_PRODOTTO 2
+#define TEMPO_PRODOTTO 2
+#endif
+
+#ifndef ADDETTO_ATTIVO
+#define ADDETTO_ATTIVO 1
+#endif
+
+#ifndef BUTTAFUORI_ATTIVO
+#define BUTTAFUORI_ATTIVO 1
+#endif
+
+#ifndef TIMER_PULIZIA_CARRELLI
+#define TIMER_PULIZIA_CARRELLI 100
+#endif
+
+#ifndef TIMER_BUTTAFUORI
+#define TIMER_BUTTAFUORI 100
+#endif
+
+#ifndef TIMER_DIRETTORE
+#define TIMER_DIRETTORE 5
+#endif
+
+#ifndef TIMER_AGGIORNAMENTO_UI
+#define TIMER_AGGIORNAMENTO_UI 1
+#endif
+
+#define PORT 5050
+#define MAX_CONNECTIONS 30
+#define MAX_REQUEST_SIZE 1024
+#define MAX_RESPONSE_SIZE 1024
