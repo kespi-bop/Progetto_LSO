@@ -90,7 +90,7 @@ class LoadingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Simulate a network delay
-    Future.delayed(const Duration(minutes: 2), () {
+    Future.delayed(const Duration(seconds: 1), () {
       // When loading is complete do nothing
     });
 
@@ -121,10 +121,37 @@ class _CatalogPageState extends State<CatalogPage> {
   bool imInTheStore = false;
 
   @override
-  void initState() {
+  initState() {
     // TODO: implement initState
     super.initState();
-    entraNelSupermercato();
+    possoEntrareNelSupermercato();
+  }
+
+  Future<void> possoEntrareNelSupermercato() async {
+    try {
+      // Connessione al server
+      Socket socket = await Socket.connect(serverAddress, serverPort);
+      socket.write('cliente:${widget.id}:ingresso');
+      socket.listen((List<int> event) {
+        String response = String.fromCharCodes(event);
+
+        print(response);
+        if (response.contains("ID_cliente")) {
+          String data = response.substring(
+              response.indexOf("ID_cliente:") + "ID_cliente:".length);
+          String posizione = data.split(':')[1];
+          print('il cliente ' + widget.id + ' è alla posizione ' + posizione);
+          if (posizione == '0' || posizione == "0\n") {
+            print('il cliente' + widget.id + 'è il prossimo a entrare');
+            socket.close();
+            entraNelSupermercato();
+          }
+        }
+      });
+    } catch (e) {
+      print('NON POSSO ENTRARE');
+      print('Error: $e');
+    }
   }
 
   Future<void> entraNelSupermercato() async {
@@ -134,18 +161,18 @@ class _CatalogPageState extends State<CatalogPage> {
 /*       print(
           'Connected to: ${socket.remoteAddress.address}:${socket.remotePort}'); */
       // Il cliente si mette in coda
-      socket.write('cliente:${widget.id}:entra');
       print('cliente:${widget.id}:entra');
+      socket.write('cliente:${widget.id}:entra');
       // Ricevi una risposta dal server
       socket.listen((List<int> event) {
         String response = String.fromCharCodes(event);
         if (response.contains("ID_carrello")) {
-          /* print(response); */
+          print(response);
           // Estrai la parte della stringa dopo "ID_cliente:"
-/*           String data = response.substring(
-              response.indexOf("ID_cliente:") + "ID_cliente:".length);
-          widget.id = data.split(':').first; */
-          print('il cliente' + widget.id + 'è entrato nel supermercato');
+          String data = response.substring(
+              response.indexOf("ID_carrello:") + "ID_carrello:".length);
+          String idCarrello = data.split(':').first;
+          print('al cliente è stato assegnato il carrello' + idCarrello);
         }
       });
       socket.close();
