@@ -27,6 +27,7 @@ void decrease_clients_number(){
     pthread_mutex_unlock(&mutex_clients_number);
 }
 
+// Function to parse the requests from the client
 void clienteParser(char* request, char* response, cart_t* carts, checkout_queue_t* checkouts_queue, entrance_queue_t* entrance_queue){
     int id;
     char command[10];
@@ -38,8 +39,8 @@ void clienteParser(char* request, char* response, cart_t* carts, checkout_queue_
     else if(strcmp(command, "esce") == 0) clientExits(id, response, carts);
     else if(strcmp(command, "aggiungi") == 0) clientAdds(id, request, response, carts);
     else if(strcmp(command, "rimuovi") == 0) clientRemoves(id, request, response, carts);
-    else if(strcmp(command, "stampa") == 0) clientPrints(id, response, carts);
-    else if(strcmp(command, "coda") == 0) clientEntersCashQueue(id, response, carts, checkouts_queue);
+    else if(strcmp(command, "stampa") == 0) clientPrintCartContent(id, response, carts);
+    else if(strcmp(command, "coda") == 0) clientEntersCheckoutQueue(id, response, carts, checkouts_queue);
     else if(strcmp(command, "paga") == 0) clientPays(id, response, carts);
     else strcpy(response, "Comando non riconosciuto\n\0");
 
@@ -49,6 +50,7 @@ void clienteParser(char* request, char* response, cart_t* carts, checkout_queue_
 
 }
 
+// Function to manage the entrance of the client
 void clientEnters(int* id, char* response, cart_t* carts, entrance_queue_t* entrance_queue){
     if(!canEnter(entrance_queue)) {
         sprintf(response, "Non puoi entrare\n");
@@ -66,6 +68,7 @@ void clientEnters(int* id, char* response, cart_t* carts, entrance_queue_t* entr
     }
 }
 
+// Function to check if the client can enter the supermarket
 bool canEnter(entrance_queue_t* entrance_queue){
     int num = get_clients_number();
     int queue = clients_number_entrance_queue(entrance_queue);
@@ -80,6 +83,7 @@ bool canEnter(entrance_queue_t* entrance_queue){
     }
 }
 
+// Function to manage the entrance of the client in the entrance queue
 void clientEntersInEntranceQueue(int id, char* response, entrance_queue_t* entrance_queue){
     if(id < 0) {
         pthread_mutex_lock(&mutex_ticket_snail);
@@ -91,6 +95,7 @@ void clientEntersInEntranceQueue(int id, char* response, entrance_queue_t* entra
     sprintf(response, "ID_cliente:%d:%d\n", id, position);
 }
 
+// Function to manage the exit of the client
 void clientExits(int id, char* response, cart_t* carts){
     if ( carts[id].status == PAYED ) {
         clear_cart(&carts[id]);
@@ -103,6 +108,7 @@ void clientExits(int id, char* response, cart_t* carts){
     
 }
 
+// Function to manage the addition of a product to the cart
 void clientAdds(int id, char* request, char* response, cart_t* carts){
     int product_id;
     char product_name[50];
@@ -120,6 +126,7 @@ void clientAdds(int id, char* request, char* response, cart_t* carts){
     }
 }
 
+// Function to manage the removal of a product from the cart
 void clientRemoves(int id, char* request, char* response, cart_t* carts){
     int product_id;
     sscanf(request, "cliente:%d:rimuovi\n:%d", &id, &product_id);
@@ -127,27 +134,30 @@ void clientRemoves(int id, char* request, char* response, cart_t* carts){
     else strcpy(response, "Prodotto non trovato\n\0");
 }
 
-void clientPrints(int id, char* response, cart_t* carts){
+// Function to manage the print of the cart
+void clientPrintCartContent(int id, char* response, cart_t* carts){
     print_cart(response, &carts[id]);
 }
 
-void clientEntersCashQueue(int id, char* response, cart_t* carts, checkout_queue_t* casse){
+// Function to manage the entrance of the client in the checkout queue
+void clientEntersCheckoutQueue(int id, char* response, cart_t* carts, checkout_queue_t* casse){
     if(carts[id].products_number == 0) {
         sprintf(response, "0\n");
         pthread_mutex_unlock(&carts[id].mutex);
         return;
     }
     if(carts[id].status == INSIDE_SUPERMARKET) {
-        add_client_to_cash_queue(id, casse);
+        add_client_to_checkout_queue(id, casse);
         carts[id].status = IN_QUEUE;
     }
-    int position = position_client_cash_queue(id, casse);
+    int position = position_client_checkout_queue(id, casse);
     if(position <= 0 && carts[id].status == IN_QUEUE) {
         pthread_mutex_unlock(&carts[id].mutex);
     }
     sprintf(response, "%d\n", position);
 }
 
+// Function to manage the payment of the client
 void clientPays(int id, char* response, cart_t* carts) {
     if(carts[id].status == PAYMENT || carts[id].status == PAYED) {
         sprintf(response, "ok\n");

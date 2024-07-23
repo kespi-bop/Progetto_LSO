@@ -1,3 +1,10 @@
+
+#define PORT 5050
+#define MAX_CONNECTIONS 30
+#define MAX_REQUEST_SIZE 1024
+#define MAX_RESPONSE_SIZE 1024
+
+
 #ifndef C_VARIABLE
 #define C_VARIABLE 10
 #endif
@@ -5,6 +12,7 @@
 #ifndef E_VARIABLE
 #define E_VARIABLE 3
 #endif
+
 
 #ifndef CASHES_NUMBER
 #define CASHES_NUMBER 2
@@ -38,11 +46,7 @@
 #define DIRECTOR_TIMER 5
 #endif
 
+
 #ifndef UI_UPDATE_TIMER
 #define UI_UPDATE_TIMER 1
 #endif
-
-#define PORT 5050
-#define MAX_CONNECTIONS 30
-#define MAX_REQUEST_SIZE 1024
-#define MAX_RESPONSE_SIZE 1024

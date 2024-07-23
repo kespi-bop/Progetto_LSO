@@ -1,11 +1,11 @@
 #include "codaCassa.h"
 
-void add_client_to_cash_queue(int client_id, checkout_queue_t* checkout_queue){
-    //printf("[TEST-CODA-CASSE] Aggiungo il cliente %d alla coda\n", client_id);
+// Class to manage the queue for the checkout
+
+// Function to add a client to the queue
+void add_client_to_checkout_queue(int client_id, checkout_queue_t* checkout_queue){
     pthread_mutex_lock(&mutex_checkout_queue); // Lock mutex before accessing the queue
-    //printf("[TEST-CODA-CASSE] Mutex acquisito\n");
     node_t* new_node = (node_t*) malloc(sizeof(node_t));
-    //printf("[TEST-CODA-CASSE] Nodo allocato\n");
     new_node->client_id = client_id;
     new_node->next = NULL;
     if(checkout_queue->head == NULL){
@@ -15,11 +15,10 @@ void add_client_to_cash_queue(int client_id, checkout_queue_t* checkout_queue){
         checkout_queue->tail->next = new_node;
         checkout_queue->tail = new_node;
     }
-    //printf("[TEST-CODA-CASSE] Cliente %d aggiunto alla coda\n", client_id);
     pthread_mutex_unlock(&mutex_checkout_queue); // Unlock mutex after accessing the queue
-    //printf("[TEST-CODA-CASSE] Mutex rilasciato\n");
 }
 
+// Function to remove a client from the queue
 int remove_client_from_cash_queue(checkout_queue_t* checkout_queue){
     pthread_mutex_lock(&mutex_checkout_queue); // Lock mutex before accessing the queue
     if(checkout_queue->head == NULL){
@@ -35,6 +34,7 @@ int remove_client_from_cash_queue(checkout_queue_t* checkout_queue){
     }
 }
 
+// Function to remove a client from the queue by id
 int remove_client_from_cash_queue_by_id(int client_id, checkout_queue_t* checkout_queue){
     pthread_mutex_lock(&mutex_checkout_queue); // Lock mutex before accessing the queue
     if(checkout_queue->head == NULL){
@@ -63,6 +63,7 @@ int remove_client_from_cash_queue_by_id(int client_id, checkout_queue_t* checkou
 
 }
 
+// Function to get the number of clients in the queue
 int clients_number_cash_queue(checkout_queue_t* checkout_queue){
     pthread_mutex_lock(&mutex_checkout_queue); // Lock mutex before accessing the queue
     int clients_number = 0;
@@ -75,7 +76,8 @@ int clients_number_cash_queue(checkout_queue_t* checkout_queue){
     return clients_number;
 }
 
-int position_client_cash_queue(int client_id, checkout_queue_t* checkout_queue){
+// Function to get the position of a client in the queue by id
+int position_client_checkout_queue(int client_id, checkout_queue_t* checkout_queue){
     pthread_mutex_lock(&mutex_checkout_queue); // Lock mutex before accessing the queue
     int position = 0;
     node_t* current_node = checkout_queue->head;

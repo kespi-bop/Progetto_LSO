@@ -1,5 +1,6 @@
 #include "carrello.h"
 
+// Function to add a product to the cart
 void add_product(cart_t* cart, product_t product) {
     // Creazione del nuovo cart_node
     cart_node_t* new_cart_node = (cart_node_t*)malloc(sizeof(cart_node_t));
@@ -19,6 +20,7 @@ void add_product(cart_t* cart, product_t product) {
     cart->products_number++;
 }
 
+// Function to remove a product from the cart
 bool remove_product(cart_t* cart, int product_id) {
     cart_node_t* current_cart_node = cart->head;
     cart_node_t* previous_cart_node = NULL;
@@ -52,16 +54,17 @@ bool remove_product(cart_t* cart, int product_id) {
     return false;
 }
 
-void print_cart(char* stringa, cart_t* cart) {
+// Function to print the content of the cart
+void print_cart(char* cart_string, cart_t* cart) {
     cart_node_t* current_cart_node = cart->head;
 
     while (current_cart_node != NULL) {
-        sprintf(stringa, "%s{%d:%s:%f}\n", stringa, current_cart_node->product.id, current_cart_node->product.name, current_cart_node->product.price);
+        sprintf(cart_string, "%s{%d:%s:%f}\n", cart_string, current_cart_node->product.id, current_cart_node->product.name, current_cart_node->product.price);
         current_cart_node = current_cart_node->next;
     }
 }
 
-
+// Function to calculate the total price of the items in the cart
 float calculate_total(cart_t* cart) {
     int total = 0;
     cart_node_t* current_cart_node = cart->head;
@@ -74,17 +77,18 @@ float calculate_total(cart_t* cart) {
     return total;
 }
 
+// Function to initialize the carts
 void initialize_carts(cart_t* carts) {
     for (int i = 0; i < C_VARIABLE; i++) {
         carts[i].status = FREE;
-        carts[i].products_number = 0;
         carts[i].head = NULL;
         carts[i].tail = NULL;
+        carts[i].products_number = 0;
         carts[i].last_operation = time(NULL);
     }
 }
 
-
+// Function to clear the cart
 void clear_cart(cart_t* cart) {
     cart_node_t* current_cart_node = cart->head;
     cart_node_t* next_cart_node = NULL;

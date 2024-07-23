@@ -1,5 +1,8 @@
 #include "codaIngresso.h"
 
+// Class to manage the queue for the entrance
+
+// Function to add a client to the queue
 void add_client_to_entrance_queue(int client_id, entrance_queue_t* entrance_queue){
     pthread_mutex_lock(&mutex_entrance_queue); // Lock mutex before accessing the queue
     entrance_node_t* new_entrance_node = (entrance_node_t*) malloc(sizeof(entrance_node_t));
@@ -16,6 +19,7 @@ void add_client_to_entrance_queue(int client_id, entrance_queue_t* entrance_queu
     pthread_mutex_unlock(&mutex_entrance_queue); // Unlock mutex after accessing the queue
 }
 
+// Function to remove a client from the queue
 int remove_client_entrance_queue(entrance_queue_t* entrance_queue){
     pthread_mutex_lock(&mutex_entrance_queue); // Lock mutex before accessing the queue
     if(entrance_queue->head == NULL){
@@ -31,6 +35,7 @@ int remove_client_entrance_queue(entrance_queue_t* entrance_queue){
     }
 }
 
+// Function to remove a client from the queue by id
 int remove_client_entrance_queue_by_id(int client_id, entrance_queue_t* entrance_queue){
     pthread_mutex_lock(&mutex_entrance_queue); // Lock mutex before accessing the queue
     if(entrance_queue->head == NULL){
@@ -59,6 +64,7 @@ int remove_client_entrance_queue_by_id(int client_id, entrance_queue_t* entrance
 
 }
 
+// Function to count the number of clients in the queue
 int clients_number_entrance_queue(entrance_queue_t* entrance_queue){
     pthread_mutex_lock(&mutex_entrance_queue); // Lock mutex before accessing the queue
     entrance_node_t* current_entrance_node = entrance_queue->head;
@@ -71,6 +77,7 @@ int clients_number_entrance_queue(entrance_queue_t* entrance_queue){
     return count;
 }
 
+// Function to get the position of a client in the queue
 int position_client_entrance_queue(int client_id, entrance_queue_t* entrance_queue){
     pthread_mutex_lock(&mutex_entrance_queue); // Lock mutex before accessing the queue
     entrance_node_t* current_entrance_node = entrance_queue->head;

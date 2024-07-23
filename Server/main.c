@@ -138,16 +138,17 @@ void* process(void * ptr) {
     return NULL;
 }
 
+void read_request(int socket, char* request) {
+    if(recv(socket, request, MAX_REQUEST_SIZE, 0) == -1) perror("Recv"), exit(1);
+}
+
 void send_response(int socket, char* response) {
     //printf("[TEST-SEND] Sending response: %s\n", response);
     if(send(socket, response, strlen(response), 0) == -1) perror("Send"), exit(1);
     //printf("[TEST-SEND] Response sent\n");
 }
 
-void read_request(int socket, char* request) {
-    if(recv(socket, request, MAX_REQUEST_SIZE, 0) == -1) perror("Recv"), exit(1);
-}
-
+// Function to send the catalog to the client
 void sendCatalog(char* response) {
     FILE* catalog = fopen("catalogo.json", "r");
     if(catalog == NULL) perror("Error in opening the catalog"), exit(1);
@@ -161,6 +162,7 @@ void sendCatalog(char* response) {
     
 }
 
+// Function to clean up the carts if they are not used for a certain time
 void* reorderCarts() {
     while(ACTIVE_EMPLOYEE) {
         sleep(CARTS_CLEANUP_TIMER); 
@@ -179,6 +181,7 @@ void* reorderCarts() {
     return NULL;
 }
 
+// Function to check if the clients are still in the entrance queue and remove them if they have been there for too long without entering
 void* bouncerAtEntrance(){
     while(ACTIVE_BOUNCER) {
         sleep(BOUNCER_TIMER); 
@@ -197,6 +200,7 @@ void* bouncerAtEntrance(){
     return NULL;
 }
 
+// Function to create a user interface
 void* ui(){
     int update = 0;
     while(1){
@@ -242,25 +246,35 @@ void* ui(){
     return NULL;
 }
 
-void print_stickman(int num_stickman) {
-    int i, j;
+// void print_stickman(int num_stickman) {
+//     int i, j;
     
-    for (i = 0; i < 5; i++) {
-        for (j = 0; j < num_stickman; j++) {
-            if (i == 0)
-                printf(" O ");
-            else if (i == 1)
-                printf("/|\\");
-            else if (i == 2)
-                printf(" | ");
-            else if (i == 3)
-                printf("/ \\");
-            else
-                printf("   ");
+//     for (i = 0; i < 5; i++) {
+//         for (j = 0; j < num_stickman; j++) {
+//             if (i == 0)
+//                 printf(" O ");
+//             else if (i == 1)
+//                 printf("/|\\");
+//             else if (i == 2)
+//                 printf(" | ");
+//             else if (i == 3)
+//                 printf("/ \\");
+//             else
+//                 printf("   ");
             
-            printf("   "); // space between stickmans
-        }
-        printf("\n");
+//             printf("   "); // space between stickmans
+//         }
+//         printf("\n");
+//     }
+//     fflush(stdout);
+// }
+
+// Function to print the clients
+void print_stickman(int num_stickman) {
+    int i;
+    for (i = 0; i < num_stickman; i++) {
+        printf("(^_^)/");
+        printf("   "); // space between clients
     }
     fflush(stdout);
 }

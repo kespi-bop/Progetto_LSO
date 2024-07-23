@@ -1,5 +1,6 @@
 #include "cassiere.h"
 
+// Function to create a cashier
 void cashierEnters(int id, int cashierTime, int productProcessingTime, cart_t* carts, checkout_queue_t* checkout_queue) {
     pthread_t thread_cassiere;
     cashier_t* cashier = (cashier_t*)malloc(sizeof(cashier_t));
@@ -11,6 +12,7 @@ void cashierEnters(int id, int cashierTime, int productProcessingTime, cart_t* c
     if(pthread_create(&thread_cassiere, NULL, waitQueue, (void*)cashier) < 0) perror("Could not create thread"), exit(EXIT_FAILURE);
 } 
 
+// Function to wait for the queue
 void* waitQueue(void* ptr) {
     cashier_t* cashier = (cashier_t*)ptr;
     checkout_queue_t* checkout_queue = cashier->checkout_queue;
@@ -30,6 +32,7 @@ void* waitQueue(void* ptr) {
     pthread_exit(NULL);
 }
 
+// Function to process the items of the cart
 void* processCart(void* ptr) {
     cashier_t* cashier = (cashier_t*)ptr;
     cart_t* carts = cashier->carts;

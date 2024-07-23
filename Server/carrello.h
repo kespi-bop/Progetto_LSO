@@ -22,6 +22,7 @@ typedef struct cart_node {
     struct cart_node* next;
 } cart_node_t;
 
+// enum for the status of the cart
 typedef enum {
     FREE,
     INSIDE_SUPERMARKET,

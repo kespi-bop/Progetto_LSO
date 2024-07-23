@@ -1,5 +1,6 @@
 #include "direttore.h"
 
+// Function to check if a client has the approval of the director to get out
 void* checkExit(void* ptr){
     cart_t* carts = (cart_t*)ptr;
     while(1){
