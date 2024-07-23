@@ -88,10 +88,6 @@ int main(int argc, char** argv) {
             exit(EXIT_FAILURE);
         }
 
-        else{
-            printf("[SERVER] New connection\n");
-        }
-
         // Dinamic allocation to pass the socket descriptor to the thread
         int *client_socket_ptr = malloc(sizeof(int));
         *client_socket_ptr = client_socket;

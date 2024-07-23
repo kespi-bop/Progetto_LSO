@@ -58,7 +58,7 @@ void clientEnters(int* id, char* response, cart_t* carts, entrance_queue_t* entr
     if(!canEnter(entrance_queue)) {
         sprintf(response, "Non puoi entrare\n");
     }else{
-        printf("[BOUNCER] Client %d can enter\n", *id);
+        printf("[BOUNCER] Client can enter\n");
         remove_client_entrance_queue(entrance_queue);
         increase_clients_number();
         int i = 0;
