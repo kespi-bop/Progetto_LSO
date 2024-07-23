@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:test_flutter_lso/checkoutPage.dart';
 import 'package:test_flutter_lso/loadingPage.dart';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:test_flutter_lso/model/Prodotto.dart';
 
@@ -19,7 +20,8 @@ class _CatalogPageState extends State<CatalogPage> {
   final String serverAddress =
       '192.168.1.137'; // o l'indirizzo IP del tuo server
   final int serverPort = 5050; // la porta su cui il server sta ascoltando
-
+  List<Prodotto> _products = [];
+  String idCarrello = '-1';
   bool imInTheStore = false;
 
   @override
@@ -34,33 +36,40 @@ class _CatalogPageState extends State<CatalogPage> {
     try {
       // Connessione al server
 
-      while (!entrato) {
-        Socket socket = await Socket.connect(serverAddress, serverPort);
+      while (true) {
         print('Sono entrato?' + entrato.toString());
+        Socket socket = await Socket.connect(serverAddress, serverPort);
+        print('Socket APERTA');
         socket.write('cliente:${widget.id}:ingresso');
-        socket.listen((List<int> event) async {
+        print("CLIENTE:${widget.id}:INGRESSO");
+        await for (var event in socket) {
           String response = String.fromCharCodes(event);
-
           print(response);
+
           if (response.contains("ID_cliente")) {
             String data = response.substring(
                 response.indexOf("ID_cliente:") + "ID_cliente:".length);
-            String posizione = data.split(':')[1];
-            print('il cliente ' + widget.id + ' è alla posizione ' + posizione);
-            if (posizione == '0' || posizione == "0\n") {
-              print('il cliente' + widget.id + 'è il prossimo a entrare');
+            String posizione =
+                data.split(':')[1].trim(); // Trim whitespace and newlines
+            print('Il cliente ' + widget.id + ' è alla posizione ' + posizione);
+
+            if (posizione == '0') {
+              print('Il cliente ' + widget.id + ' è il prossimo a entrare');
               entrato = true;
             }
           }
-          print('PossoEntrare ora?' + entrato.toString());
-        });
-        sleep(Duration(seconds: 5));
-        socket.close();
+        }
+        await socket.close();
         if (entrato) {
           await entraNelSupermercato();
+          print("STO PER ROMPERER IL CICLO");
           break;
+        } else {
+          print("SONO ENTRATO NEL ELSE, NON POSSO ENTRARE");
+          sleep(Duration(seconds: 2));
         }
       }
+      print("SONO ENTRATO PERCHE' IL WHILE E' TERMINATO");
     } catch (e) {
       print('NON POSSO ENTRARE');
       print('Error: $e');
@@ -68,30 +77,41 @@ class _CatalogPageState extends State<CatalogPage> {
   }
 
   Future<void> entraNelSupermercato() async {
+    bool assignedCart = false;
     try {
-      // Connessione al server
-/*       print(
-          'Connected to: ${socket.remoteAddress.address}:${socket.remotePort}'); */
-      // Il cliente si mette in coda
-      Socket socket = await Socket.connect(serverAddress, serverPort);
-      print('cliente:${widget.id}:entra');
-      socket.write('cliente:${widget.id}:entra');
-      // Ricevi una risposta dal server
-      socket.listen((List<int> event) {
-        String response = String.fromCharCodes(event);
-        if (response.contains("ID_carrello")) {
-          print(response);
-          // Estrai la parte della stringa dopo "ID_cliente:"
-          String data = response.substring(
-              response.indexOf("ID_carrello:") + "ID_carrello:".length);
-          String idCarrello = data.split(':').first;
-          print('al cliente è stato assegnato il carrello' + idCarrello);
+      while (!assignedCart) {
+        print('ho il carrello assegnato?' + assignedCart.toString());
+        Socket socket = await Socket.connect(serverAddress, serverPort);
+        print('cliente:(id_carrello)$idCarrello:entra');
+        socket.write('cliente:$idCarrello:entra');
+        print("CLIENTE:${widget.id}:ENTRA");
+        // Ricevi una risposta dal server
+        await for (var event in socket) {
+          String response = String.fromCharCodes(event);
+          if (response.contains("ID_carrello")) {
+            print(response);
+            // Estrai la parte della stringa dopo "ID_carrello:"
+            String idCarrelloResponse = response.substring(
+                response.indexOf("ID_carrello:") + "ID_carrello:".length);
+            if (idCarrelloResponse != '-1' && idCarrelloResponse != '-1\n') {
+              print('al cliente è stato assegnato il carrello' +
+                  idCarrelloResponse);
+              assignedCart = true;
+            }
+          }
+          print('ho il carrello assegnato ORA?' + assignedCart.toString());
         }
-      });
-      await visualizzaCatalogo();
-      setState(() {
-        imInTheStore = true;
-      });
+        await socket.close();
+        if (assignedCart) {
+          await visualizzaCatalogo();
+          setState(() {
+            imInTheStore = true;
+          });
+          break;
+        } else {
+          sleep(Duration(seconds: 2));
+        }
+      }
     } catch (e) {
       print('Error: $e');
     }
@@ -106,36 +126,82 @@ class _CatalogPageState extends State<CatalogPage> {
       Socket socket = await Socket.connect(serverAddress, serverPort);
       socket.write('catalogo');
       // Ricevi una risposta dal server
-      socket.listen((List<int> event) {
+      await for (var event in socket) {
         String response = String.fromCharCodes(event);
-        print(response);
-      });
+        // Decode the JSON string
+        /* print(response); */
+        final Map<String, dynamic> decodedJson = jsonDecode(response);
+
+        // Extract the list of products from the decoded JSON
+        final List<dynamic> productsJson = decodedJson['prodotti'];
+
+        // Convert the JSON list into a List<Prodotto>
+        _products = productsJson.map((productJson) {
+          return Prodotto.fromJson(productJson);
+        }).toList();
+        // Print the products to verify
+        _products.forEach((product) {
+          print(
+              'ID: ${product.id}, Nome: ${product.nome}, Prezzo: ${product.prezzo}');
+        });
+      }
+      await socket.close();
     } catch (e) {
       print('Error: $e');
     }
   }
 
-  final List<Prodotto> _items = List.generate(
-    10,
-    (index) =>
-        Prodotto(id: index, nome: 'Item $index', prezzo: (index + 1) * 10.0),
-  );
   final Map<Prodotto, int> _cart = {};
 
   void _toggleItem(Prodotto item, bool adding) {
     setState(() {
       if (adding) {
         _cart[item] = (_cart[item] ?? 0) + 1;
+        aggiungiAlCarrello(item);
       } else {
         if (_cart.containsKey(item)) {
           if (_cart[item]! > 1) {
             _cart[item] = _cart[item]! - 1;
           } else {
+            rimuoviDalCarrello(item.id);
             _cart.remove(item);
           }
         }
       }
     });
+  }
+
+  Future<void> aggiungiAlCarrello(Prodotto product) async {
+    try {
+      // Connessione al server
+      Socket socket = await Socket.connect(serverAddress, serverPort);
+      socket.write(
+          'cliente:$idCarrello:aggiungi\n:${product.id}:${product.nome}:${product.prezzo}');
+      // Ricevi una risposta dal server
+      socket.listen((List<int> event) {
+        String response = String.fromCharCodes(event);
+        print('ho aggiunto: ' + response);
+      });
+      socket.close();
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> rimuoviDalCarrello(int idProdotto) async {
+    try {
+      // Connessione al server
+      Socket socket = await Socket.connect(serverAddress, serverPort);
+      socket.write("cliente:${widget.id}:rimuovi\n:$idProdotto");
+      // Ricevi una risposta dal server
+      socket.listen((List<int> event) {
+        String response = String.fromCharCodes(event);
+        print('ho rimosso: ' + response);
+      });
+      socket.close();
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   double get _totalPrice {
@@ -153,9 +219,9 @@ class _CatalogPageState extends State<CatalogPage> {
               children: [
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _items.length,
+                    itemCount: _products.length,
                     itemBuilder: (context, index) {
-                      final item = _items[index];
+                      final item = _products[index];
                       final quantity = _cart[item] ?? 0;
 
                       return ListTile(
