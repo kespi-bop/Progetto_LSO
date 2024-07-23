@@ -90,7 +90,7 @@ class LoadingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Simulate a network delay
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 10), () {
       // When loading is complete do nothing
     });
 
@@ -131,10 +131,12 @@ class _CatalogPageState extends State<CatalogPage> {
     bool entrato = false;
     try {
       // Connessione al server
-      Socket socket = await Socket.connect(serverAddress, serverPort);
+
       while (!entrato) {
+        Socket socket = await Socket.connect(serverAddress, serverPort);
+        print('Sono entrato?' + entrato.toString());
         socket.write('cliente:${widget.id}:ingresso');
-        socket.listen((List<int> event) {
+        socket.listen((List<int> event) async {
           String response = String.fromCharCodes(event);
 
           print(response);
@@ -145,13 +147,17 @@ class _CatalogPageState extends State<CatalogPage> {
             print('il cliente ' + widget.id + ' è alla posizione ' + posizione);
             if (posizione == '0' || posizione == "0\n") {
               print('il cliente' + widget.id + 'è il prossimo a entrare');
-              socket.close();
               entrato = true;
-              entraNelSupermercato();
             }
           }
+          print('PossoEntrare ora?' + entrato.toString());
         });
         sleep(Duration(seconds: 5));
+        socket.close();
+        if (entrato) {
+          await entraNelSupermercato();
+          break;
+        }
       }
     } catch (e) {
       print('NON POSSO ENTRARE');
@@ -162,10 +168,10 @@ class _CatalogPageState extends State<CatalogPage> {
   Future<void> entraNelSupermercato() async {
     try {
       // Connessione al server
-      Socket socket = await Socket.connect(serverAddress, serverPort);
 /*       print(
           'Connected to: ${socket.remoteAddress.address}:${socket.remotePort}'); */
       // Il cliente si mette in coda
+      Socket socket = await Socket.connect(serverAddress, serverPort);
       print('cliente:${widget.id}:entra');
       socket.write('cliente:${widget.id}:entra');
       // Ricevi una risposta dal server
@@ -180,7 +186,6 @@ class _CatalogPageState extends State<CatalogPage> {
           print('al cliente è stato assegnato il carrello' + idCarrello);
         }
       });
-      socket.close();
       await visualizzaCatalogo();
       setState(() {
         imInTheStore = true;
@@ -193,17 +198,16 @@ class _CatalogPageState extends State<CatalogPage> {
   Future<void> visualizzaCatalogo() async {
     try {
       // Connessione al server
-      Socket socket = await Socket.connect(serverAddress, serverPort);
 /*       print(
           'Connected to: ${socket.remoteAddress.address}:${socket.remotePort}'); */
       // Il cliente si mette in coda
+      Socket socket = await Socket.connect(serverAddress, serverPort);
       socket.write('catalogo');
       // Ricevi una risposta dal server
       socket.listen((List<int> event) {
         String response = String.fromCharCodes(event);
         /* print(response); */
       });
-      socket.close();
     } catch (e) {
       print('Error: $e');
     }
