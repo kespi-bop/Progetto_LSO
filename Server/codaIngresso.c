@@ -1,89 +1,89 @@
 #include "codaIngresso.h"
 
-void add_client_to_entrance_queue(int id_cliente, coda_ingresso_t* coda_ingresso){
-    pthread_mutex_lock(&mutex_coda_ingresso); // Lock mutex before accessing the queue
-    nodoIngresso_t* nuovo_nodoIngresso = (nodoIngresso_t*) malloc(sizeof(nodoIngresso_t));
-    nuovo_nodoIngresso->id_cliente = id_cliente;
-    nuovo_nodoIngresso->ultima_operazione = time(NULL);
-    nuovo_nodoIngresso->next = NULL;
-    if(coda_ingresso->head == NULL){
-        coda_ingresso->head = nuovo_nodoIngresso;
-        coda_ingresso->tail = nuovo_nodoIngresso;
+void add_client_to_entrance_queue(int client_id, entrance_queue_t* entrance_queue){
+    pthread_mutex_lock(&mutex_entrance_queue); // Lock mutex before accessing the queue
+    entrance_node_t* new_entrance_node = (entrance_node_t*) malloc(sizeof(entrance_node_t));
+    new_entrance_node->client_id = client_id;
+    new_entrance_node->last_operation = time(NULL);
+    new_entrance_node->next = NULL;
+    if(entrance_queue->head == NULL){
+        entrance_queue->head = new_entrance_node;
+        entrance_queue->tail = new_entrance_node;
     } else {
-        coda_ingresso->tail->next = nuovo_nodoIngresso;
-        coda_ingresso->tail = nuovo_nodoIngresso;
+        entrance_queue->tail->next = new_entrance_node;
+        entrance_queue->tail = new_entrance_node;
     }
-    pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex after accessing the queue
+    pthread_mutex_unlock(&mutex_entrance_queue); // Unlock mutex after accessing the queue
 }
 
-int remove_client_entrance_queue(coda_ingresso_t* coda_ingresso){
-    pthread_mutex_lock(&mutex_coda_ingresso); // Lock mutex before accessing the queue
-    if(coda_ingresso->head == NULL){
-        pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex if the queue is empty
+int remove_client_entrance_queue(entrance_queue_t* entrance_queue){
+    pthread_mutex_lock(&mutex_entrance_queue); // Lock mutex before accessing the queue
+    if(entrance_queue->head == NULL){
+        pthread_mutex_unlock(&mutex_entrance_queue); // Unlock mutex if the queue is empty
         return -1;
     } else {
-        nodoIngresso_t* nodoIngresso_da_rimuovere = coda_ingresso->head;
-        int id_cliente = nodoIngresso_da_rimuovere->id_cliente;
-        coda_ingresso->head = coda_ingresso->head->next;
-        free(nodoIngresso_da_rimuovere);
-        pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex after accessing the queue
-        return id_cliente;
+        entrance_node_t* entrance_node_to_remove = entrance_queue->head;
+        int client_id = entrance_node_to_remove->client_id;
+        entrance_queue->head = entrance_queue->head->next;
+        free(entrance_node_to_remove);
+        pthread_mutex_unlock(&mutex_entrance_queue); // Unlock mutex after accessing the queue
+        return client_id;
     }
 }
 
-int remove_client_entrance_queue_by_id(int id_cliente, coda_ingresso_t* coda_ingresso){
-    pthread_mutex_lock(&mutex_coda_ingresso); // Lock mutex before accessing the queue
-    if(coda_ingresso->head == NULL){
-        pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex if the queue is empty
+int remove_client_entrance_queue_by_id(int client_id, entrance_queue_t* entrance_queue){
+    pthread_mutex_lock(&mutex_entrance_queue); // Lock mutex before accessing the queue
+    if(entrance_queue->head == NULL){
+        pthread_mutex_unlock(&mutex_entrance_queue); // Unlock mutex if the queue is empty
         return -1;
     } else {
-        nodoIngresso_t* nodoIngresso_corrente = coda_ingresso->head;
-        nodoIngresso_t* nodoIngresso_precedente = NULL;
-        while(nodoIngresso_corrente != NULL){
-            if(nodoIngresso_corrente->id_cliente == id_cliente){
-                if(nodoIngresso_precedente == NULL){
-                    coda_ingresso->head = nodoIngresso_corrente->next;
+        entrance_node_t* current_entrance_node = entrance_queue->head;
+        entrance_node_t* previous_entrance_node = NULL;
+        while(current_entrance_node != NULL){
+            if(current_entrance_node->client_id == client_id){
+                if(previous_entrance_node == NULL){
+                    entrance_queue->head = current_entrance_node->next;
                 } else {
-                    nodoIngresso_precedente->next = nodoIngresso_corrente->next;
+                    previous_entrance_node->next = current_entrance_node->next;
                 }
-                free(nodoIngresso_corrente);
-                pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex after accessing the queue
-                return id_cliente;
+                free(current_entrance_node);
+                pthread_mutex_unlock(&mutex_entrance_queue); // Unlock mutex after accessing the queue
+                return client_id;
             }
-            nodoIngresso_precedente = nodoIngresso_corrente;
-            nodoIngresso_corrente = nodoIngresso_corrente->next;
+            previous_entrance_node = current_entrance_node;
+            current_entrance_node = current_entrance_node->next;
         }
-        pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex after accessing the queue
+        pthread_mutex_unlock(&mutex_entrance_queue); // Unlock mutex after accessing the queue
         return -1;
     }
 
 }
 
-int clients_number_entrance_queue(coda_ingresso_t* coda_ingresso){
-    pthread_mutex_lock(&mutex_coda_ingresso); // Lock mutex before accessing the queue
-    nodoIngresso_t* nodoIngresso_corrente = coda_ingresso->head;
+int clients_number_entrance_queue(entrance_queue_t* entrance_queue){
+    pthread_mutex_lock(&mutex_entrance_queue); // Lock mutex before accessing the queue
+    entrance_node_t* current_entrance_node = entrance_queue->head;
     int count = 0;
-    while(nodoIngresso_corrente != NULL){
+    while(current_entrance_node != NULL){
         count++;
-        nodoIngresso_corrente = nodoIngresso_corrente->next;
+        current_entrance_node = current_entrance_node->next;
     }
-    pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex after accessing the queue
+    pthread_mutex_unlock(&mutex_entrance_queue); // Unlock mutex after accessing the queue
     return count;
 }
 
-int position_client_entrance_queue(int id_cliente, coda_ingresso_t* coda_ingresso){
-    pthread_mutex_lock(&mutex_coda_ingresso); // Lock mutex before accessing the queue
-    nodoIngresso_t* nodoIngresso_corrente = coda_ingresso->head;
+int position_client_entrance_queue(int client_id, entrance_queue_t* entrance_queue){
+    pthread_mutex_lock(&mutex_entrance_queue); // Lock mutex before accessing the queue
+    entrance_node_t* current_entrance_node = entrance_queue->head;
     int count = 0;
-    while(nodoIngresso_corrente != NULL){
-        if(nodoIngresso_corrente->id_cliente == id_cliente){
-            nodoIngresso_corrente->ultima_operazione = time(NULL);
-            pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex after accessing the queue
+    while(current_entrance_node != NULL){
+        if(current_entrance_node->client_id == client_id){
+            current_entrance_node->last_operation = time(NULL);
+            pthread_mutex_unlock(&mutex_entrance_queue); // Unlock mutex after accessing the queue
             return count;
         }
         count++;
-        nodoIngresso_corrente = nodoIngresso_corrente->next;
+        current_entrance_node = current_entrance_node->next;
     }
-    pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex after accessing the queue
+    pthread_mutex_unlock(&mutex_entrance_queue); // Unlock mutex after accessing the queue
     return -1;
 }

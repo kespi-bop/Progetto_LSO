@@ -1,103 +1,103 @@
 #include "carrello.h"
 
-void add_product(carrello_t* carrello, prodotto_t prodotto) {
-    // Creazione del nuovo nodo_carr
-    nodo_t_carr* nuovo_nodo_carr = (nodo_t_carr*)malloc(sizeof(nodo_t_carr));
-    nuovo_nodo_carr->prodotto = prodotto;
-    nuovo_nodo_carr->next = NULL;
+void add_product(cart_t* cart, product_t prodotto) {
+    // Creazione del nuovo cart_node
+    cart_node_t* new_cart_node = (cart_node_t*)malloc(sizeof(cart_node_t));
+    new_cart_node->prodotto = prodotto;
+    new_cart_node->next = NULL;
 
-    if (carrello->head == NULL) {
-        // La coda è vuota, il nuovo nodo_carr diventa la testa e la coda
-        carrello->head = nuovo_nodo_carr;
-        carrello->tail = nuovo_nodo_carr;
+    if (cart->head == NULL) {
+        // La coda è vuota, il nuovo cart_node diventa la testa e la coda
+        cart->head = new_cart_node;
+        cart->tail = new_cart_node;
     } else {
-        // Aggiunta del nuovo nodo_carr in coda
-        carrello->tail->next = nuovo_nodo_carr;
-        carrello->tail = nuovo_nodo_carr;
+        // Aggiunta del nuovo cart_node in coda
+        cart->tail->next = new_cart_node;
+        cart->tail = new_cart_node;
     }
 
-    carrello->n_prodotti++;
+    cart->products_number++;
 }
 
-bool remove_product(carrello_t* carrello, int id_prodotto) {
-    nodo_t_carr* nodo_carr_corrente = carrello->head;
-    nodo_t_carr* nodo_carr_precedente = NULL;
+bool remove_product(cart_t* cart, int id_prodotto) {
+    cart_node_t* current_cart_node = cart->head;
+    cart_node_t* previous_cart_node = NULL;
 
-    while (nodo_carr_corrente != NULL) {
-        if (nodo_carr_corrente->prodotto.id == id_prodotto) {
-            // Rimozione del nodo_carr corrente
-            if (nodo_carr_precedente == NULL) {
-                // Il nodo_carr corrente è la testa
-                carrello->head = nodo_carr_corrente->next;
+    while (current_cart_node != NULL) {
+        if (current_cart_node->prodotto.id == id_prodotto) {
+            // Rimozione del cart_node corrente
+            if (previous_cart_node == NULL) {
+                // Il cart_node corrente è la testa
+                cart->head = current_cart_node->next;
             } else {
-                // Il nodo_carr corrente non è la testa
-                nodo_carr_precedente->next = nodo_carr_corrente->next;
+                // Il cart_node corrente non è la testa
+                previous_cart_node->next = current_cart_node->next;
             }
 
-            // Se il nodo_carr corrente è la coda, aggiornamento della coda
-            if (nodo_carr_corrente == carrello->tail) {
-                carrello->tail = nodo_carr_precedente;
+            // Se il cart_node corrente è la coda, aggiornamento della coda
+            if (current_cart_node == cart->tail) {
+                cart->tail = previous_cart_node;
             }
 
-            // Deallocazione del nodo_carr corrente
-            free(nodo_carr_corrente);
+            // Deallocazione del cart_node corrente
+            free(current_cart_node);
 
-            carrello->n_prodotti--;
+            cart->products_number--;
             return true;
         }
 
-        nodo_carr_precedente = nodo_carr_corrente;
-        nodo_carr_corrente = nodo_carr_corrente->next;
+        previous_cart_node = current_cart_node;
+        current_cart_node = current_cart_node->next;
     }
     return false;
 }
 
-void print_cart(char* stringa, carrello_t* carrello) {
-    nodo_t_carr* nodo_carr_corrente = carrello->head;
+void print_cart(char* stringa, cart_t* cart) {
+    cart_node_t* current_cart_node = cart->head;
 
-    while (nodo_carr_corrente != NULL) {
-        sprintf(stringa, "%s{%d:%s:%f}\n", stringa, nodo_carr_corrente->prodotto.id, nodo_carr_corrente->prodotto.nome, nodo_carr_corrente->prodotto.prezzo);
-        nodo_carr_corrente = nodo_carr_corrente->next;
+    while (current_cart_node != NULL) {
+        sprintf(stringa, "%s{%d:%s:%f}\n", stringa, current_cart_node->prodotto.id, current_cart_node->prodotto.nome, current_cart_node->prodotto.prezzo);
+        current_cart_node = current_cart_node->next;
     }
 }
 
 
-float calculate_total(carrello_t* carrello) {
-    int totale = 0;
-    nodo_t_carr* nodo_carr_corrente = carrello->head;
+float calculate_total(cart_t* cart) {
+    int total = 0;
+    cart_node_t* current_cart_node = cart->head;
 
-    while (nodo_carr_corrente != NULL) {
-        totale += nodo_carr_corrente->prodotto.prezzo;
-        nodo_carr_corrente = nodo_carr_corrente->next;
+    while (current_cart_node != NULL) {
+        total += current_cart_node->prodotto.prezzo;
+        current_cart_node = current_cart_node->next;
     }
 
-    return totale;
+    return total;
 }
 
-void initialize_carts(carrello_t* carrelli) {
+void initialize_carts(cart_t* carts) {
     for (int i = 0; i < C_VARIABLE; i++) {
-        carrelli[i].status = LIBERO;
-        carrelli[i].n_prodotti = 0;
-        carrelli[i].head = NULL;
-        carrelli[i].tail = NULL;
-        carrelli[i].ultima_operazione = time(NULL);
+        carts[i].status = FREE;
+        carts[i].products_number = 0;
+        carts[i].head = NULL;
+        carts[i].tail = NULL;
+        carts[i].last_operation = time(NULL);
     }
 }
 
 
-void clear_cart(carrello_t* carrello) {
-    nodo_t_carr* nodo_carr_corrente = carrello->head;
-    nodo_t_carr* nodo_carr_successivo = NULL;
+void clear_cart(cart_t* cart) {
+    cart_node_t* current_cart_node = cart->head;
+    cart_node_t* next_cart_node = NULL;
 
-    while (nodo_carr_corrente != NULL) {
+    while (current_cart_node != NULL) {
         // Save the pointer to the next node
-        nodo_carr_successivo = nodo_carr_corrente->next;
+        next_cart_node = current_cart_node->next;
 
         // Remove the current node
-        remove_product(carrello, nodo_carr_corrente->prodotto.id);
+        remove_product(cart, current_cart_node->prodotto.id);
 
         // Go to the next node
-        nodo_carr_corrente = nodo_carr_successivo;
+        current_cart_node = next_cart_node;
     }
 }
 
