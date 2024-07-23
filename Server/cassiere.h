@@ -11,15 +11,15 @@
 // Structure for the cashier
 typedef struct {
     int id;
-    int cashierTime;
-    int productProcessingTime;
-    cart_t* carts;
-    checkout_queue_t* checkout_queue;
-} cashier_t;
+    int tempoCassiere;
+    int tempoElaborazioneProdotto;
+    carrello_t* carrelli;
+    coda_casse_t* coda_casse;
+} cassiere_t;
 
-extern pthread_mutex_t mutex_cashiers;
+extern pthread_mutex_t mutex_cassieri;
 
-void cashierEnters(int, int, int, cart_t*, checkout_queue_t*);
+void cashierEnters(int, int, int, carrello_t*, coda_casse_t*);
 void* waitQueue(void*);
 void* processCart(void*);
 

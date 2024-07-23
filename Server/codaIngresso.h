@@ -12,25 +12,25 @@
 
 
 // Mutex for the entrance queue
-extern pthread_mutex_t mutex_entrance_queue;
+extern pthread_mutex_t mutex_coda_ingresso;
 
 // Node for the entrance queue
 typedef struct nodoIngresso {
-    int client_id;
-    time_t last_operation;
+    int id_cliente;
+    time_t ultima_operazione;
     struct nodoIngresso* next;
-} entrance_node_t;
+} nodoIngresso_t;
 
 typedef struct {
-    entrance_node_t* head;
-    entrance_node_t* tail;
-} entrance_queue_t;
+    nodoIngresso_t* head;
+    nodoIngresso_t* tail;
+} coda_ingresso_t;
 
-void add_client_to_entrance_queue(int, entrance_queue_t*);
-int remove_client_entrance_queue(entrance_queue_t*);
-int remove_client_entrance_queue_by_id(int, entrance_queue_t*);
-int clients_number_entrance_queue(entrance_queue_t*);
-int position_client_entrance_queue(int, entrance_queue_t*);
+void add_client_to_entrance_queue(int, coda_ingresso_t*);
+int remove_client_entrance_queue(coda_ingresso_t*);
+int remove_client_entrance_queue_by_id(int, coda_ingresso_t*);
+int clients_number_entrance_queue(coda_ingresso_t*);
+int position_client_entrance_queue(int, coda_ingresso_t*);
 
 
 #endif
