@@ -97,6 +97,9 @@ class _CatalogPageState extends State<CatalogPage> {
               print('al cliente è stato assegnato il carrello' +
                   idCarrelloResponse);
               assignedCart = true;
+              setState(() {
+                idCarrello = idCarrelloResponse.trim();
+              });
             }
           }
           print('ho il carrello assegnato ORA?' + assignedCart.toString());
@@ -175,13 +178,19 @@ class _CatalogPageState extends State<CatalogPage> {
     try {
       // Connessione al server
       Socket socket = await Socket.connect(serverAddress, serverPort);
+      print("l'id del carrello è: " +
+          idCarrello +
+          "e il prodotto è: " +
+          product.id.toString());
+      print(
+          "cliente:$idCarrello:aggiungi\n:${product.id}:${product.nome}:${product.prezzo}");
       socket.write(
-          'cliente:$idCarrello:aggiungi\n:${product.id}:${product.nome}:${product.prezzo}');
+          "cliente:$idCarrello:aggiungi\n:${product.id}:${product.nome}:${product.prezzo}");
       // Ricevi una risposta dal server
-      socket.listen((List<int> event) {
+      await for (var event in socket) {
         String response = String.fromCharCodes(event);
         print('ho aggiunto: ' + response);
-      });
+      }
       socket.close();
     } catch (e) {
       print('Error: $e');
@@ -194,10 +203,10 @@ class _CatalogPageState extends State<CatalogPage> {
       Socket socket = await Socket.connect(serverAddress, serverPort);
       socket.write("cliente:${widget.id}:rimuovi\n:$idProdotto");
       // Ricevi una risposta dal server
-      socket.listen((List<int> event) {
+      await for (var event in socket) {
         String response = String.fromCharCodes(event);
         print('ho rimosso: ' + response);
-      });
+      }
       socket.close();
     } catch (e) {
       print('Error: $e');
@@ -260,7 +269,9 @@ class _CatalogPageState extends State<CatalogPage> {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const CheckoutPage()),
+                            builder: (context) => CheckoutPage(
+                                  idCarrello: idCarrello,
+                                )),
                       );
                     },
                     child: const Text('Join the checkout queue'),

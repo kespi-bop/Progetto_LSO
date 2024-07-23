@@ -10,7 +10,8 @@ class StampaCarrelloPage extends StatefulWidget {
 }
 
 class _StampaCarrelloPageState extends State<StampaCarrelloPage> {
-  final String serverAddress = '192.168.1.182'; // Modifica l'indirizzo IP del tuo server
+  final String serverAddress =
+      '192.168.1.137'; // Modifica l'indirizzo IP del tuo server
   final int serverPort = 5050; // La porta su cui il server sta ascoltando
   String carrelloResponse = '';
   bool isLoading = true;
@@ -25,14 +26,15 @@ class _StampaCarrelloPageState extends State<StampaCarrelloPage> {
     try {
       // Connessione al server
       Socket socket = await Socket.connect(serverAddress, serverPort);
-      print('Connected to: ${socket.remoteAddress.address}:${socket.remotePort}');
-      
+      print(
+          'Connected to: ${socket.remoteAddress.address}:${socket.remotePort}');
+
       // Invia la richiesta di stampa del carrello
       String request = 'cliente:${widget.idCarrello}:stampa';
       socket.write(request);
-      
+
       // Ricevi la risposta dal server
-      socket.listen((List<int> event) {
+      await for (var event in socket) {
         String response = String.fromCharCodes(event);
         setState(() {
           carrelloResponse = response;
@@ -40,7 +42,7 @@ class _StampaCarrelloPageState extends State<StampaCarrelloPage> {
         });
         print(response);
         socket.close();
-      });
+      }
     } catch (e) {
       print('Error: $e');
       setState(() {
@@ -59,7 +61,9 @@ class _StampaCarrelloPageState extends State<StampaCarrelloPage> {
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                carrelloResponse.isNotEmpty ? carrelloResponse : 'Carrello vuoto',
+                carrelloResponse.isNotEmpty
+                    ? carrelloResponse
+                    : 'Carrello vuoto',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),

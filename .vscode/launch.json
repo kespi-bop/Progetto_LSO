@@ -8,7 +8,7 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/gianf/Desktop/Progetto_LSO/Client",
+      "cwd": "c:/Users/gianf/Desktop/Progetto_LSO/Client_MainProject",
       "program": "c:/Users/gianf/Desktop/Progetto_LSO/Client/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",

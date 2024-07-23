@@ -34,8 +34,9 @@ class _HomePageState extends State<HomePage> {
       // Il cliente si mette in coda
       socket.write('cliente:-1:ingresso');
       // Ricevi una risposta dal server
-      socket.listen((List<int> event) {
+      await for (var event in socket) {
         String response = String.fromCharCodes(event);
+        print('Server: $response');
         if (response.contains("ID_cliente")) {
           // Estrai la parte della stringa dopo "ID_cliente:"
           String data = response.substring(
@@ -43,7 +44,7 @@ class _HomePageState extends State<HomePage> {
           id = data.split(':').first;
           print('il cliente' + id + 'si mette in coda');
         }
-      });
+      }
       socket.close();
     } catch (e) {
       print('Error: $e');

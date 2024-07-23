@@ -10,7 +10,8 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  final String serverAddress = '192.168.1.182'; // Modifica l'indirizzo IP del tuo server
+  final String serverAddress =
+      '192.168.1.137'; // Modifica l'indirizzo IP del tuo server
   final int serverPort = 5050; // La porta su cui il server sta ascoltando
   String codaResponse = '';
   bool isLoading = true;
@@ -18,21 +19,28 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   void initState() {
     super.initState();
+    print("STO PER METTERMI IN CODA CON ID CARRELLO:" + widget.idCarrello);
     mettiInCoda();
   }
 
   Future<void> mettiInCoda() async {
     try {
       // Connessione al server
+      print("STO PER CREARE LA SOCKET");
       Socket socket = await Socket.connect(serverAddress, serverPort);
-      print('Connected to: ${socket.remoteAddress.address}:${socket.remotePort}');
-      
+      print("SOCKET APERTA");
+      print(
+          'Connected to: ${socket.remoteAddress.address}:${socket.remotePort}');
+
+      print('il cliente con carrello ' +
+          widget.idCarrello +
+          ' si mette in coda alla cassa');
       // Invia la richiesta di mettersi in coda alla cassa
       String request = 'cliente:${widget.idCarrello}:coda';
       socket.write(request);
-      
+
       // Ricevi la risposta dal server
-      socket.listen((List<int> event) {
+      await for (var event in socket) {
         String response = String.fromCharCodes(event);
         setState(() {
           codaResponse = response;
@@ -40,7 +48,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         });
         print(response);
         socket.close();
-      });
+      }
     } catch (e) {
       print('Error: $e');
       setState(() {
