@@ -43,6 +43,8 @@ void print_stickman(int num_stickman);
 
 pthread_mutex_t mutex_cashiers = PTHREAD_MUTEX_INITIALIZER;
 
+// Main function: entry point of the server
+// It initializes the carts, the checkout queue, the entrance queue, the mutexes and the cashiers
 int main(int argc, char** argv) {
     printf("[SERVER] Charts initialization\n");
     initialize_carts(carts);
@@ -101,6 +103,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+// Function to process the request from the client
 void* process(void * ptr) {
     int socket = *((int *) ptr);
     free(ptr); // Free the memory allocated for the socket descriptor
@@ -117,7 +120,7 @@ void* process(void * ptr) {
     // Processing the request
     if(strstr(request, "cliente") != NULL) {
         //printf("[CLIENT] Request: %s\n", request);
-        clienteParser(request, response, carts, &checkout_queue, &entrance_queue);
+        clientParser(request, response, carts, &checkout_queue, &entrance_queue);
         //printf("[SERVER] Response sent: %s", response);
     } else if(strstr(request, "cassiere") != NULL) {
         //printf("[CASHIER] Request: %s\n", request);
@@ -138,10 +141,12 @@ void* process(void * ptr) {
     return NULL;
 }
 
+// Function to read the request from the client
 void read_request(int socket, char* request) {
     if(recv(socket, request, MAX_REQUEST_SIZE, 0) == -1) perror("Recv"), exit(1);
 }
 
+// Function to send the response to the client
 void send_response(int socket, char* response) {
     //printf("[TEST-SEND] Sending response: %s\n", response);
     if(send(socket, response, strlen(response), 0) == -1) perror("Send"), exit(1);
@@ -181,7 +186,7 @@ void* reorderCarts() {
     return NULL;
 }
 
-// Function to check if the clients are still in the entrance queue and remove them if they have been there for too long without entering
+// Function to check if there are clients in the entrance queue and remove them if they have been there for too long without entering
 void* bouncerAtEntrance(){
     while(ACTIVE_BOUNCER) {
         sleep(BOUNCER_TIMER); 
@@ -223,7 +228,7 @@ void* ui(){
         fflush(stdout);
         int people_entrance_queue = clients_number_entrance_queue(&entrance_queue);
         print_stickman(people_entrance_queue);
-        int people_checkout_queue = clients_number_cash_queue(&checkout_queue);
+        int people_checkout_queue = clients_number_checkout_queue(&checkout_queue);
         printf("\nINSIDE THE SUPERMARKET:\n");
         print_stickman(people_inside);
         printf("\n");
@@ -269,7 +274,7 @@ void* ui(){
 //     fflush(stdout);
 // }
 
-// Function to print the clients
+// Function to print the clients on the screen
 void print_stickman(int num_stickman) {
     int i;
     for (i = 0; i < num_stickman; i++) {

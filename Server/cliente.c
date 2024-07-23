@@ -7,6 +7,7 @@ int clients_number = 0;
 int ticket_number = 0;
 bool allow = true;
 
+// gets the number of clients in the supermarket
 int get_clients_number(){
     int n;
     pthread_mutex_lock(&mutex_clients_number);
@@ -15,12 +16,14 @@ int get_clients_number(){
     return n;
 }
 
+// increases the number of clients in the supermarket
 void increase_clients_number(){
     pthread_mutex_lock(&mutex_clients_number);
     clients_number++;
     pthread_mutex_unlock(&mutex_clients_number);
 }
 
+// decreases the number of clients in the supermarket
 void decrease_clients_number(){
     pthread_mutex_lock(&mutex_clients_number);
     clients_number--;
@@ -28,7 +31,7 @@ void decrease_clients_number(){
 }
 
 // Function to parse the requests from the client
-void clienteParser(char* request, char* response, cart_t* carts, checkout_queue_t* checkouts_queue, entrance_queue_t* entrance_queue){
+void clientParser(char* request, char* response, cart_t* carts, checkout_queue_t* checkouts_queue, entrance_queue_t* entrance_queue){
     int id;
     char command[10];
     char data[100];
@@ -37,8 +40,8 @@ void clienteParser(char* request, char* response, cart_t* carts, checkout_queue_
     else if(strcmp(command, "ingresso") == 0) clientEntersInEntranceQueue(id, response, entrance_queue);
     else if(carts[id].status == FREE) { strcpy(response, "Sessione scaduta\n\0"); return; }
     else if(strcmp(command, "esce") == 0) clientExits(id, response, carts);
-    else if(strcmp(command, "aggiungi") == 0) clientAdds(id, request, response, carts);
-    else if(strcmp(command, "rimuovi") == 0) clientRemoves(id, request, response, carts);
+    else if(strcmp(command, "aggiungi") == 0) clientAddItem(id, request, response, carts);
+    else if(strcmp(command, "rimuovi") == 0) clientRemoveItem(id, request, response, carts);
     else if(strcmp(command, "stampa") == 0) clientPrintCartContent(id, response, carts);
     else if(strcmp(command, "coda") == 0) clientEntersCheckoutQueue(id, response, carts, checkouts_queue);
     else if(strcmp(command, "paga") == 0) clientPays(id, response, carts);
@@ -50,7 +53,7 @@ void clienteParser(char* request, char* response, cart_t* carts, checkout_queue_
 
 }
 
-// Function to manage the entrance of the client
+// Function to manage the entrance of the client: if the client can enter, it enters the supermarket, otherwise it is added to the entrance queue
 void clientEnters(int* id, char* response, cart_t* carts, entrance_queue_t* entrance_queue){
     if(!canEnter(entrance_queue)) {
         sprintf(response, "Non puoi entrare\n");
@@ -83,7 +86,7 @@ bool canEnter(entrance_queue_t* entrance_queue){
     }
 }
 
-// Function to manage the entrance of the client in the entrance queue
+// Function to manage the entrance of the client in the entrance queue: if the client has a negative id, it is assigned a ticket number
 void clientEntersInEntranceQueue(int id, char* response, entrance_queue_t* entrance_queue){
     if(id < 0) {
         pthread_mutex_lock(&mutex_ticket_snail);
@@ -109,7 +112,7 @@ void clientExits(int id, char* response, cart_t* carts){
 }
 
 // Function to manage the addition of a product to the cart
-void clientAdds(int id, char* request, char* response, cart_t* carts){
+void clientAddItem(int id, char* request, char* response, cart_t* carts){
     int product_id;
     char product_name[50];
     float product_price;
@@ -127,7 +130,7 @@ void clientAdds(int id, char* request, char* response, cart_t* carts){
 }
 
 // Function to manage the removal of a product from the cart
-void clientRemoves(int id, char* request, char* response, cart_t* carts){
+void clientRemoveItem(int id, char* request, char* response, cart_t* carts){
     int product_id;
     sscanf(request, "cliente:%d:rimuovi\n:%d", &id, &product_id);
     if(remove_product(&carts[id], product_id)) strcpy(response, "ok\n\0");
@@ -139,7 +142,9 @@ void clientPrintCartContent(int id, char* response, cart_t* carts){
     print_cart(response, &carts[id]);
 }
 
-// Function to manage the entrance of the client in the checkout queue
+// Function to manage the entrance of the client in the checkout queue:
+// if the client has no products, it is not added to the queue;
+// if the client is inside the supermarket and he is ready to checkout, it is added to the queue;
 void clientEntersCheckoutQueue(int id, char* response, cart_t* carts, checkout_queue_t* casse){
     if(carts[id].products_number == 0) {
         sprintf(response, "0\n");

@@ -28,7 +28,7 @@ typedef struct {
 void add_client_to_checkout_queue(int, checkout_queue_t*);
 int remove_client_from_cash_queue(checkout_queue_t*);
 int remove_client_from_cash_queue_by_id(int, checkout_queue_t*);
-int clients_number_cash_queue(checkout_queue_t*);
+int clients_number_checkout_queue(checkout_queue_t*);
 int position_client_checkout_queue(int, checkout_queue_t*);
 
 #endif

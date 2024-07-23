@@ -64,7 +64,7 @@ int remove_client_from_cash_queue_by_id(int client_id, checkout_queue_t* checkou
 }
 
 // Function to get the number of clients in the queue
-int clients_number_cash_queue(checkout_queue_t* checkout_queue){
+int clients_number_checkout_queue(checkout_queue_t* checkout_queue){
     pthread_mutex_lock(&mutex_checkout_queue); // Lock mutex before accessing the queue
     int clients_number = 0;
     node_t* current_node = checkout_queue->head;
