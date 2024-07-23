@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 // Simulate loading and then navigate to the catalog page
 class LoadingPage extends StatelessWidget {
-  const LoadingPage({super.key});
+  final String s;
+  const LoadingPage({super.key, required this.s});
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +13,20 @@ class LoadingPage extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Loading')),
-      body: const Center(
-        child: CircularProgressIndicator(),
+      appBar: AppBar(
+          automaticallyImplyLeading: false, title: const Text('Loading')),
+      body: Column(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(s),
+            ),
+          ),
+          const Center(
+            child: CircularProgressIndicator(),
+          ),
+        ],
       ),
     );
   }

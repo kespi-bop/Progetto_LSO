@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:test_flutter_lso/checkoutPage.dart';
-import 'package:test_flutter_lso/loadingPage.dart';
 import 'dart:io';
 import 'dart:convert';
 
@@ -164,6 +163,7 @@ class _CatalogPageState extends State<CatalogPage> {
       } else {
         if (_cart.containsKey(item)) {
           if (_cart[item]! > 1) {
+            rimuoviDalCarrello(item.id);
             _cart[item] = _cart[item]! - 1;
           } else {
             rimuoviDalCarrello(item.id);
@@ -201,7 +201,9 @@ class _CatalogPageState extends State<CatalogPage> {
     try {
       // Connessione al server
       Socket socket = await Socket.connect(serverAddress, serverPort);
-      socket.write("cliente:${widget.id}:rimuovi\n:$idProdotto");
+      print("l'id del carrello da cui rimuovere è: " + idCarrello);
+      print("cliente:$idCarrello:rimuovi\n:$idProdotto");
+      socket.write("cliente:$idCarrello:rimuovi\n:$idProdotto");
       // Ricevi una risposta dal server
       await for (var event in socket) {
         String response = String.fromCharCodes(event);
@@ -223,7 +225,6 @@ class _CatalogPageState extends State<CatalogPage> {
   Widget build(BuildContext context) {
     return imInTheStore
         ? Scaffold(
-            appBar: AppBar(title: Text('Catalog ${widget.id}')),
             body: Column(
               children: [
                 Expanded(
@@ -280,6 +281,6 @@ class _CatalogPageState extends State<CatalogPage> {
               ],
             ),
           )
-        : const LoadingPage();
+        : const Center(child: CircularProgressIndicator());
   }
 }
