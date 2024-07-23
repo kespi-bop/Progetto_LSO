@@ -1,9 +1,9 @@
 #include "carrello.h"
 
-void add_product(cart_t* cart, product_t prodotto) {
+void add_product(cart_t* cart, product_t product) {
     // Creazione del nuovo cart_node
     cart_node_t* new_cart_node = (cart_node_t*)malloc(sizeof(cart_node_t));
-    new_cart_node->prodotto = prodotto;
+    new_cart_node->product = product;
     new_cart_node->next = NULL;
 
     if (cart->head == NULL) {
@@ -19,12 +19,12 @@ void add_product(cart_t* cart, product_t prodotto) {
     cart->products_number++;
 }
 
-bool remove_product(cart_t* cart, int id_prodotto) {
+bool remove_product(cart_t* cart, int product_id) {
     cart_node_t* current_cart_node = cart->head;
     cart_node_t* previous_cart_node = NULL;
 
     while (current_cart_node != NULL) {
-        if (current_cart_node->prodotto.id == id_prodotto) {
+        if (current_cart_node->product.id == product_id) {
             // Rimozione del cart_node corrente
             if (previous_cart_node == NULL) {
                 // Il cart_node corrente è la testa
@@ -56,7 +56,7 @@ void print_cart(char* stringa, cart_t* cart) {
     cart_node_t* current_cart_node = cart->head;
 
     while (current_cart_node != NULL) {
-        sprintf(stringa, "%s{%d:%s:%f}\n", stringa, current_cart_node->prodotto.id, current_cart_node->prodotto.nome, current_cart_node->prodotto.prezzo);
+        sprintf(stringa, "%s{%d:%s:%f}\n", stringa, current_cart_node->product.id, current_cart_node->product.name, current_cart_node->product.price);
         current_cart_node = current_cart_node->next;
     }
 }
@@ -67,7 +67,7 @@ float calculate_total(cart_t* cart) {
     cart_node_t* current_cart_node = cart->head;
 
     while (current_cart_node != NULL) {
-        total += current_cart_node->prodotto.prezzo;
+        total += current_cart_node->product.price;
         current_cart_node = current_cart_node->next;
     }
 
@@ -94,7 +94,7 @@ void clear_cart(cart_t* cart) {
         next_cart_node = current_cart_node->next;
 
         // Remove the current node
-        remove_product(cart, current_cart_node->prodotto.id);
+        remove_product(cart, current_cart_node->product.id);
 
         // Go to the next node
         current_cart_node = next_cart_node;

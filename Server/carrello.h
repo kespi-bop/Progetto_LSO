@@ -12,13 +12,13 @@
 // Data structure for the product
 typedef struct {
     int id;
-    char nome[50];
-    float prezzo;
+    char name[50];
+    float price;
 } product_t;
 
 // cart_node for the queue
 typedef struct cart_node {
-    product_t prodotto;
+    product_t product;
     struct cart_node* next;
 } cart_node_t;
 
