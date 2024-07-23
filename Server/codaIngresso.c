@@ -1,8 +1,7 @@
 #include "codaIngresso.h"
 
-void aggiungi_cliente_coda_ingresso(int id_cliente, coda_ingresso_t* coda_ingresso){
+void add_client_to_entrance_queue(int id_cliente, coda_ingresso_t* coda_ingresso){
     pthread_mutex_lock(&mutex_coda_ingresso); // Lock mutex before accessing the queue
-   //printf"Aggiungo %d alla coda di ingresso\n", id_cliente);
     nodoIngresso_t* nuovo_nodoIngresso = (nodoIngresso_t*) malloc(sizeof(nodoIngresso_t));
     nuovo_nodoIngresso->id_cliente = id_cliente;
     nuovo_nodoIngresso->ultima_operazione = time(NULL);
@@ -17,7 +16,7 @@ void aggiungi_cliente_coda_ingresso(int id_cliente, coda_ingresso_t* coda_ingres
     pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex after accessing the queue
 }
 
-int rimuovi_cliente_coda_ingresso(coda_ingresso_t* coda_ingresso){
+int remove_client_entrance_queue(coda_ingresso_t* coda_ingresso){
     pthread_mutex_lock(&mutex_coda_ingresso); // Lock mutex before accessing the queue
     if(coda_ingresso->head == NULL){
         pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex if the queue is empty
@@ -32,7 +31,7 @@ int rimuovi_cliente_coda_ingresso(coda_ingresso_t* coda_ingresso){
     }
 }
 
-int rimuovi_cliente_coda_ingresso_id(int id_cliente, coda_ingresso_t* coda_ingresso){
+int remove_client_entrance_queue_by_id(int id_cliente, coda_ingresso_t* coda_ingresso){
     pthread_mutex_lock(&mutex_coda_ingresso); // Lock mutex before accessing the queue
     if(coda_ingresso->head == NULL){
         pthread_mutex_unlock(&mutex_coda_ingresso); // Unlock mutex if the queue is empty
@@ -60,7 +59,7 @@ int rimuovi_cliente_coda_ingresso_id(int id_cliente, coda_ingresso_t* coda_ingre
 
 }
 
-int numero_clienti_coda_ingresso(coda_ingresso_t* coda_ingresso){
+int clients_number_entrance_queue(coda_ingresso_t* coda_ingresso){
     pthread_mutex_lock(&mutex_coda_ingresso); // Lock mutex before accessing the queue
     nodoIngresso_t* nodoIngresso_corrente = coda_ingresso->head;
     int count = 0;
@@ -72,7 +71,7 @@ int numero_clienti_coda_ingresso(coda_ingresso_t* coda_ingresso){
     return count;
 }
 
-int posizione_cliente_coda_ingresso(int id_cliente, coda_ingresso_t* coda_ingresso){
+int position_client_entrance_queue(int id_cliente, coda_ingresso_t* coda_ingresso){
     pthread_mutex_lock(&mutex_coda_ingresso); // Lock mutex before accessing the queue
     nodoIngresso_t* nodoIngresso_corrente = coda_ingresso->head;
     int count = 0;

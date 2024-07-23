@@ -1,6 +1,6 @@
 #include "codaCassa.h"
 
-void aggiungi_cliente_coda(int id_cliente, coda_casse_t* coda_casse){
+void add_client_to_cash_queue(int id_cliente, coda_casse_t* coda_casse){
     //printf("[TEST-CODA-CASSE] Aggiungo il cliente %d alla coda\n", id_cliente);
     pthread_mutex_lock(&mutex_coda_casse); // Lock mutex before accessing the queue
     //printf("[TEST-CODA-CASSE] Mutex acquisito\n");
@@ -20,7 +20,7 @@ void aggiungi_cliente_coda(int id_cliente, coda_casse_t* coda_casse){
     //printf("[TEST-CODA-CASSE] Mutex rilasciato\n");
 }
 
-int rimuovi_cliente_coda(coda_casse_t* coda_casse){
+int remove_client_from_cash_queue(coda_casse_t* coda_casse){
     pthread_mutex_lock(&mutex_coda_casse); // Lock mutex before accessing the queue
     if(coda_casse->head == NULL){
         pthread_mutex_unlock(&mutex_coda_casse); // Unlock mutex if the queue is empty
@@ -35,7 +35,7 @@ int rimuovi_cliente_coda(coda_casse_t* coda_casse){
     }
 }
 
-int rimuovi_cliente_coda_id(int id_cliente, coda_casse_t* coda_casse){
+int remove_client_from_cash_queue_by_id(int id_cliente, coda_casse_t* coda_casse){
     pthread_mutex_lock(&mutex_coda_casse); // Lock mutex before accessing the queue
     if(coda_casse->head == NULL){
         pthread_mutex_unlock(&mutex_coda_casse); // Unlock mutex if the queue is empty
@@ -63,7 +63,7 @@ int rimuovi_cliente_coda_id(int id_cliente, coda_casse_t* coda_casse){
 
 }
 
-int numero_clienti_coda(coda_casse_t* coda_casse){
+int clients_number_cash_queue(coda_casse_t* coda_casse){
     pthread_mutex_lock(&mutex_coda_casse); // Lock mutex before accessing the queue
     int numero_clienti = 0;
     nodo_t* nodo_corrente = coda_casse->head;
@@ -75,7 +75,7 @@ int numero_clienti_coda(coda_casse_t* coda_casse){
     return numero_clienti;
 }
 
-int posizione_cliente_coda(int id_cliente, coda_casse_t* coda_casse){
+int position_client_cash_queue(int id_cliente, coda_casse_t* coda_casse){
     pthread_mutex_lock(&mutex_coda_casse); // Lock mutex before accessing the queue
     int posizione = 0;
     nodo_t* nodo_corrente = coda_casse->head;

@@ -8,6 +8,7 @@
 #include "codaCassa.h"
 #include "config.h"
 
+// Structure for the cashier
 typedef struct {
     int id;
     int tempoCassiere;
@@ -18,8 +19,8 @@ typedef struct {
 
 extern pthread_mutex_t mutex_cassieri;
 
-void cassiereEntra(int, int, int, carrello_t*, coda_casse_t*);
-void* aspettaFila(void*);
-void* elaboraCarrello(void*);
+void cashierEnters(int, int, int, carrello_t*, coda_casse_t*);
+void* waitQueue(void*);
+void* processCart(void*);
 
 #endif

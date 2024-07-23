@@ -1,45 +1,45 @@
-#ifndef VARIABILE_C
-#define VARIABILE_C 10
+#ifndef C_VARIABLE
+#define C_VARIABLE 10
 #endif
 
-#ifndef VARIABILE_E
-#define VARIABILE_E 3
+#ifndef E_VARIABLE
+#define E_VARIABLE 3
 #endif
 
-#ifndef N_CASSE
-#define N_CASSE 2
+#ifndef CASHES_NUMBER
+#define CASHES_NUMBER 2
 #endif
 
-#ifndef TEMPO_CASSIERE
-#define TEMPO_CASSIERE 5
+#ifndef CASHIER_TIME
+#define CASHIER_TIME 5
 #endif
 
-#ifndef TEMPO_PRODOTTO 2
-#define TEMPO_PRODOTTO 2
+#ifndef PRODUCT_TIME 2
+#define PRODUCT_TIME 2
 #endif
 
-#ifndef ADDETTO_ATTIVO
-#define ADDETTO_ATTIVO 1
+#ifndef ACTIVE_EMPLOYEE
+#define ACTIVE_EMPLOYEE 1
 #endif
 
-#ifndef BUTTAFUORI_ATTIVO
-#define BUTTAFUORI_ATTIVO 1
+#ifndef ACTIVE_BOUNCER
+#define ACTIVE_BOUNCER 1
 #endif
 
-#ifndef TIMER_PULIZIA_CARRELLI
-#define TIMER_PULIZIA_CARRELLI 100
+#ifndef CARTS_CLEANUP_TIMER
+#define CARTS_CLEANUP_TIMER 100
 #endif
 
-#ifndef TIMER_BUTTAFUORI
-#define TIMER_BUTTAFUORI 100
+#ifndef BOUNCER_TIMER
+#define BOUNCER_TIMER 100
 #endif
 
-#ifndef TIMER_DIRETTORE
-#define TIMER_DIRETTORE 5
+#ifndef DIRECTOR_TIMER
+#define DIRECTOR_TIMER 5
 #endif
 
-#ifndef TIMER_AGGIORNAMENTO_UI
-#define TIMER_AGGIORNAMENTO_UI 1
+#ifndef UI_UPDATE_TIMER
+#define UI_UPDATE_TIMER 1
 #endif
 
 #define PORT 5050

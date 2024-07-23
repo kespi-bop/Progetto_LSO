@@ -9,14 +9,14 @@
 
 #include "config.h"
 
-// Struttura dati per il prodotto
+// Data structure for the product
 typedef struct {
     int id;
     char nome[50];
     float prezzo;
 } prodotto_t;
 
-// nodo_carr della coda
+// cart_node for the queue
 typedef struct nodo_carr {
     prodotto_t prodotto;
     struct nodo_carr* next;
@@ -32,22 +32,22 @@ typedef enum {
     CONFERMA
 } stato_carrello_t;
 
-// Struttura dati per la carrello
+// Structure for the cart
 typedef struct {
-    stato_carrello_t status; // Stato del carrello
-    time_t ultima_operazione; // Ultima operazione effettuata sul carrello
-    int n_prodotti; // Numero di prodotti nel carrello
-    nodo_t_carr* head; // Puntatore alla testa della coda
-    nodo_t_carr* tail; // Puntatore alla coda della coda
-    pthread_mutex_t mutex; // Mutex per il carrello
+    stato_carrello_t status; // Status of the cart
+    time_t ultima_operazione; // Last operation on the cart
+    int n_prodotti; // Products in the cart
+    nodo_t_carr* head; // Pointer to the head of the queue
+    nodo_t_carr* tail; // Pointer to the tail of the queue
+    pthread_mutex_t mutex; // Mutex for the cart
 } carrello_t;
 
 
-void stampa_carrello(char*, carrello_t*);
-void aggiungi_prodotto(carrello_t*, prodotto_t);
-float calcola_totale(carrello_t*);
-bool rimuovi_prodotto(carrello_t*, int);
-void inizializza_carrelli(carrello_t*);
-void svuota_carrello(carrello_t*);
+void print_cart(char*, carrello_t*);
+void add_product(carrello_t*, prodotto_t);
+float calculate_total(carrello_t*);
+bool remove_product(carrello_t*, int);
+void initialize_carts(carrello_t*);
+void clear_cart(carrello_t*);
 
 #endif

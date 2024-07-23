@@ -11,10 +11,10 @@
 #include "config.h"
 
 
-// Mutex per la coda di ingresso
+// Mutex for the entrance queue
 extern pthread_mutex_t mutex_coda_ingresso;
 
-// Nodo della coda
+// Node for the entrance queue
 typedef struct nodoIngresso {
     int id_cliente;
     time_t ultima_operazione;
@@ -26,11 +26,11 @@ typedef struct {
     nodoIngresso_t* tail;
 } coda_ingresso_t;
 
-void aggiungi_cliente_coda_ingresso(int, coda_ingresso_t*);
-int rimuovi_cliente_coda_ingresso(coda_ingresso_t*);
-int rimuovi_cliente_coda_ingresso_id(int, coda_ingresso_t*);
-int numero_clienti_coda_ingresso(coda_ingresso_t*);
-int posizione_cliente_coda_ingresso(int, coda_ingresso_t*);
+void add_client_to_entrance_queue(int, coda_ingresso_t*);
+int remove_client_entrance_queue(coda_ingresso_t*);
+int remove_client_entrance_queue_by_id(int, coda_ingresso_t*);
+int clients_number_entrance_queue(coda_ingresso_t*);
+int position_client_entrance_queue(int, coda_ingresso_t*);
 
 
 #endif

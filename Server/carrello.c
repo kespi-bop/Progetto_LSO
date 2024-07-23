@@ -1,6 +1,6 @@
 #include "carrello.h"
 
-void aggiungi_prodotto(carrello_t* carrello, prodotto_t prodotto) {
+void add_product(carrello_t* carrello, prodotto_t prodotto) {
     // Creazione del nuovo nodo_carr
     nodo_t_carr* nuovo_nodo_carr = (nodo_t_carr*)malloc(sizeof(nodo_t_carr));
     nuovo_nodo_carr->prodotto = prodotto;
@@ -19,7 +19,7 @@ void aggiungi_prodotto(carrello_t* carrello, prodotto_t prodotto) {
     carrello->n_prodotti++;
 }
 
-bool rimuovi_prodotto(carrello_t* carrello, int id_prodotto) {
+bool remove_product(carrello_t* carrello, int id_prodotto) {
     nodo_t_carr* nodo_carr_corrente = carrello->head;
     nodo_t_carr* nodo_carr_precedente = NULL;
 
@@ -52,7 +52,7 @@ bool rimuovi_prodotto(carrello_t* carrello, int id_prodotto) {
     return false;
 }
 
-void stampa_carrello(char* stringa, carrello_t* carrello) {
+void print_cart(char* stringa, carrello_t* carrello) {
     nodo_t_carr* nodo_carr_corrente = carrello->head;
 
     while (nodo_carr_corrente != NULL) {
@@ -62,7 +62,7 @@ void stampa_carrello(char* stringa, carrello_t* carrello) {
 }
 
 
-float calcola_totale(carrello_t* carrello) {
+float calculate_total(carrello_t* carrello) {
     int totale = 0;
     nodo_t_carr* nodo_carr_corrente = carrello->head;
 
@@ -74,8 +74,8 @@ float calcola_totale(carrello_t* carrello) {
     return totale;
 }
 
-void inizializza_carrelli(carrello_t* carrelli) {
-    for (int i = 0; i < VARIABILE_C; i++) {
+void initialize_carts(carrello_t* carrelli) {
+    for (int i = 0; i < C_VARIABLE; i++) {
         carrelli[i].status = LIBERO;
         carrelli[i].n_prodotti = 0;
         carrelli[i].head = NULL;
@@ -85,18 +85,18 @@ void inizializza_carrelli(carrello_t* carrelli) {
 }
 
 
-void svuota_carrello(carrello_t* carrello) {
+void clear_cart(carrello_t* carrello) {
     nodo_t_carr* nodo_carr_corrente = carrello->head;
     nodo_t_carr* nodo_carr_successivo = NULL;
 
     while (nodo_carr_corrente != NULL) {
-        // Salva il puntatore al prossimo nodo
+        // Save the pointer to the next node
         nodo_carr_successivo = nodo_carr_corrente->next;
 
-        // Rimuovi il nodo corrente
-        rimuovi_prodotto(carrello, nodo_carr_corrente->prodotto.id);
+        // Remove the current node
+        remove_product(carrello, nodo_carr_corrente->prodotto.id);
 
-        // Avanza al nodo successivo
+        // Go to the next node
         nodo_carr_corrente = nodo_carr_successivo;
     }
 }

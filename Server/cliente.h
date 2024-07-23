@@ -9,19 +9,19 @@
 #include "config.h"
 #include "codaIngresso.h"
 
-void decrementa_n_clienti();
-void incrementa_n_clienti();
-int get_n_clienti();
+void decrease_clients_number();
+void increase_clients_number();
+int get_clients_number();
 
-void clienteEntra(int*, char*, carrello_t*, coda_ingresso_t*);
-void clienteEsce(int, char*, carrello_t*);
+void clientEnters(int*, char*, carrello_t*, coda_ingresso_t*);
+void clientExits(int, char*, carrello_t*);
 void clienteParser(char*, char*, carrello_t*, coda_casse_t*, coda_ingresso_t*);
-void clienteAggiunge(int, char*, char*, carrello_t*);
-void clienteRimuove(int, char*, char*, carrello_t*);
-void clienteStampa(int, char*, carrello_t*);
-void clienteSiMetteInCodaAllaCassa(int, char*, carrello_t*, coda_casse_t*);
-void clientePaga(int, char*, carrello_t*);
-void clienteEntraInCodaIngresso(int, char*, coda_ingresso_t*);
-bool puoEntrare(coda_ingresso_t*);
+void clientAdds(int, char*, char*, carrello_t*);
+void clientRemoves(int, char*, char*, carrello_t*);
+void clientPrints(int, char*, carrello_t*);
+void clientEntersCashQueue(int, char*, carrello_t*, coda_casse_t*);
+void clientPays(int, char*, carrello_t*);
+void clientEntersInEntranceQueue(int, char*, coda_ingresso_t*);
+bool canEnter(coda_ingresso_t*);
 
 #endif

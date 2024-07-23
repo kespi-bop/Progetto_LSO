@@ -10,6 +10,6 @@
 #include "carrello.h"
 #include "config.h"
 
-void* controllaUscita(void*);
+void* checkExit(void*);
 
 #endif
