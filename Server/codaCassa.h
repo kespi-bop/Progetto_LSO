@@ -11,24 +11,24 @@
 #include "config.h"
 
 // Mutex for the cash queue
-extern pthread_mutex_t mutex_coda_casse;
+extern pthread_mutex_t mutex_checkout_queue;
 
 // Node for the queue
 typedef struct nodo {
-    int id_cliente;
+    int client_id;
     struct nodo* next;
-} nodo_t;
+} node_t;
 
 // Structure for the queue
 typedef struct {
-    nodo_t* head;
-    nodo_t* tail;
-} coda_casse_t;
+    node_t* head;
+    node_t* tail;
+} checkout_queue_t;
 
-void add_client_to_cash_queue(int, coda_casse_t*);
-int remove_client_from_cash_queue(coda_casse_t*);
-int remove_client_from_cash_queue_by_id(int, coda_casse_t*);
-int clients_number_cash_queue(coda_casse_t*);
-int position_client_cash_queue(int, coda_casse_t*);
+void add_client_to_cash_queue(int, checkout_queue_t*);
+int remove_client_from_cash_queue(checkout_queue_t*);
+int remove_client_from_cash_queue_by_id(int, checkout_queue_t*);
+int clients_number_cash_queue(checkout_queue_t*);
+int position_client_cash_queue(int, checkout_queue_t*);
 
 #endif

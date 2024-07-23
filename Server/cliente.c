@@ -1,104 +1,100 @@
 #include "cliente.h"
 
-extern pthread_mutex_t mutex_n_clienti;
-extern pthread_mutex_t mutex_chiocciola;
-extern pthread_mutex_t mutex_carrelli;
-int n_clienti = 0;
-int numero_chiocciola = 0;
-bool allow=true;
+extern pthread_mutex_t mutex_clients_number;
+extern pthread_mutex_t mutex_ticket_snail;
+extern pthread_mutex_t mutex_carts;
+int clients_number = 0;
+int ticket_number = 0;
+bool allow = true;
 
 int get_clients_number(){
     int n;
-    pthread_mutex_lock(&mutex_n_clienti);
-    n = n_clienti;
-    pthread_mutex_unlock(&mutex_n_clienti);
+    pthread_mutex_lock(&mutex_clients_number);
+    n = clients_number;
+    pthread_mutex_unlock(&mutex_clients_number);
     return n;
 }
 
 void increase_clients_number(){
-    pthread_mutex_lock(&mutex_n_clienti);
-    n_clienti++;
-    pthread_mutex_unlock(&mutex_n_clienti);
+    pthread_mutex_lock(&mutex_clients_number);
+    clients_number++;
+    pthread_mutex_unlock(&mutex_clients_number);
 }
 
 void decrease_clients_number(){
-    pthread_mutex_lock(&mutex_n_clienti);
-    n_clienti--;
-    pthread_mutex_unlock(&mutex_n_clienti);
+    pthread_mutex_lock(&mutex_clients_number);
+    clients_number--;
+    pthread_mutex_unlock(&mutex_clients_number);
 }
 
-void clienteParser(char* request, char* response, carrello_t* carrelli, coda_casse_t* coda_casse, coda_ingresso_t* coda_ingresso){
+void clienteParser(char* request, char* response, cart_t* carts, checkout_queue_t* checkouts_queue, entrance_queue_t* entrance_queue){
     int id;
     char comando[10];
     char dati[100];
     sscanf(request, "cliente:%d:%s\n:%s", &id, comando, dati);
-    if(strcmp(comando, "entra") == 0) clientEnters(&id, response, carrelli, coda_ingresso);
-    else if(strcmp(comando, "ingresso") == 0) clientEntersInEntranceQueue(id, response, coda_ingresso);
-    else if(carrelli[id].status == LIBERO) { strcpy(response, "Sessione scaduta\n\0"); return; }
-    else if(strcmp(comando, "esce") == 0) clientExits(id, response, carrelli);
-    else if(strcmp(comando, "aggiungi") == 0) clientAdds(id, request, response, carrelli);
-    else if(strcmp(comando, "rimuovi") == 0) clientRemoves(id, request, response, carrelli);
-    else if(strcmp(comando, "stampa") == 0) clientPrints(id, response, carrelli);
-    else if(strcmp(comando, "coda") == 0) clientEntersCashQueue(id, response, carrelli, coda_casse);
-    else if(strcmp(comando, "paga") == 0) clientPays(id, response, carrelli);
-    else strcpy(response, "Comando non riconosciuto\n\0");
+    if(strcmp(comando, "entra") == 0) clientEnters(&id, response, carts, entrance_queue);
+    else if(strcmp(comando, "ingresso") == 0) clientEntersInEntranceQueue(id, response, entrance_queue);
+    else if(carts[id].status == FREE) { strcpy(response, "Sessione scaduta\n\0"); return; }
+    else if(strcmp(comando, "esce") == 0) clientExits(id, response, carts);
+    else if(strcmp(comando, "aggiungi") == 0) clientAdds(id, request, response, carts);
+    else if(strcmp(comando, "rimuovi") == 0) clientRemoves(id, request, response, carts);
+    else if(strcmp(comando, "stampa") == 0) clientPrints(id, response, carts);
+    else if(strcmp(comando, "coda") == 0) clientEntersCashQueue(id, response, carts, checkouts_queue);
+    else if(strcmp(comando, "paga") == 0) clientPays(id, response, carts);
+    else strcpy(response, "Unknown command\n\0");
 
     if(strcmp(comando, "esce") != 0 && strcmp(comando, "ingresso") != 0 && id >= 0) {
-        carrelli[id].ultima_operazione = time(NULL);
+        carts[id].last_operation = time(NULL);
     }
 
-    //printf("[TEST-PARSER] Risposta: %s\n", response);
 }
 
-void clientEnters(int* id, char* response, carrello_t* carrelli, coda_ingresso_t* coda_ingresso){
-    if(!canEnter(coda_ingresso)) {
-        sprintf(response, "Non puoi entrare\n");
-        //printf("[TEST-ENTRA] Cliente %d non può entrare\n", *id);
+void clientEnters(int* id, char* response, cart_t* carts, entrance_queue_t* entrance_queue){
+    if(!canEnter(entrance_queue)) {
+        sprintf(response, "You can NOT enter\n");
     }else{
-        printf("[BOUNCER] Cliente %d può entrare\n", *id);
-        remove_client_entrance_queue(coda_ingresso);
-        //printf("[TEST] Cliente %d rimosso dalla coda di ingresso\n", *id);
+        printf("[BOUNCER] Client %d can enter\n", *id);
+        remove_client_entrance_queue(entrance_queue);
         increase_clients_number();
         int i = 0;
-        while(i < C_VARIABLE && carrelli[i].status != LIBERO) i++;
-        pthread_mutex_lock(&carrelli[i].mutex);
-        carrelli[i].status = IN_NEGOZIO;
-        carrelli[i].ultima_operazione = time(NULL);
-        sprintf(response, "ID_carrello:%d\n", i);
+        while(i < C_VARIABLE && carts[i].status != FREE) i++;
+        pthread_mutex_lock(&carts[i].mutex);
+        carts[i].status = INSIDE_SUPERMARKET;
+        carts[i].last_operation = time(NULL);
+        sprintf(response, "ID_cart:%d\n", i);
         *id = i;
     }
-    //printf("[TEST-ENTRA] esce\n");
 }
 
-bool canEnter(coda_ingresso_t* coda_ingresso){
-    int Num = get_clients_number();
-    int fila = clients_number_entrance_queue(coda_ingresso);
-    if (Num==C_VARIABLE) allow=false;
-    if (Num<=C_VARIABLE-E_VARIABLE) allow=true;
+bool canEnter(entrance_queue_t* entrance_queue){
+    int num = get_clients_number();
+    int queue = clients_number_entrance_queue(entrance_queue);
+    if (num==C_VARIABLE) allow = false;
+    if (num<=C_VARIABLE-E_VARIABLE) allow = true;
     if (allow){
-        printf("[BOUNCER] You can enter. Inside the supermarket: %d, In the queue: %d\n", Num, fila);
+        printf("[BOUNCER] You can enter. Inside the supermarket: %d, In the queue: %d\n", num, queue);
         return true;
     } else {
-        printf("[BOUNCER] You can NOT enter. Inside the supermarket: %d, In the queue: %d\n", Num, fila);
+        printf("[BOUNCER] You can NOT enter. Inside the supermarket: %d, In the queue: %d\n", num, queue);
         return false;
     }
 }
 
-void clientEntersInEntranceQueue(int id, char* response, coda_ingresso_t* coda_ingresso){
+void clientEntersInEntranceQueue(int id, char* response, entrance_queue_t* entrance_queue){
     if(id < 0) {
-        pthread_mutex_lock(&mutex_chiocciola);
-        id = numero_chiocciola; numero_chiocciola++;
-        pthread_mutex_unlock(&mutex_chiocciola);
-        add_client_to_entrance_queue(id, coda_ingresso);
+        pthread_mutex_lock(&mutex_ticket_snail);
+        id = ticket_number; ticket_number++;
+        pthread_mutex_unlock(&mutex_ticket_snail);
+        add_client_to_entrance_queue(id, entrance_queue);
     }
-    int position = position_client_entrance_queue(id, coda_ingresso);
+    int position = position_client_entrance_queue(id, entrance_queue);
     sprintf(response, "ID_client:%d:%d\n", id, position);
 }
 
-void clientExits(int id, char* response, carrello_t* carrelli){
-    if ( carrelli[id].status == PAGATO ) {
-        clear_cart(&carrelli[id]);
-        carrelli[id].status = LIBERO;
+void clientExits(int id, char* response, cart_t* carts){
+    if ( carts[id].status == PAYED ) {
+        clear_cart(&carts[id]);
+        carts[id].status = FREE;
         decrease_clients_number();
         strcpy(response, "You got out from the supermarket\n\0");
     } else {
@@ -107,60 +103,57 @@ void clientExits(int id, char* response, carrello_t* carrelli){
     
 }
 
-void clientAdds(int id, char* request, char* response, carrello_t* carrelli){
-    int id_prodotto;
-    char nome_prodotto[50];
-    float prezzo_prodotto;
-    sscanf(request, "cliente:%d:aggiungi\n:%d:%[^:]:%f", &id, &id_prodotto, nome_prodotto, &prezzo_prodotto);
-    prodotto_t prodotto;
-    prodotto.id = id_prodotto;
-    strcpy(prodotto.nome, nome_prodotto);
-    prodotto.prezzo = prezzo_prodotto;
-    if(carrelli[id].status == IN_NEGOZIO) {
-        add_product(&carrelli[id], prodotto);
-        //printf("Prodotto %d aggiunto al carrello %d\n", id_prodotto, id);
+void clientAdds(int id, char* request, char* response, cart_t* carts){
+    int product_id;
+    char product_name[50];
+    float product_price;
+    sscanf(request, "cliente:%d:aggiungi\n:%d:%[^:]:%f", &id, &product_id, product_name, &product_price);
+    product_t product;
+    product.id = product_id;
+    strcpy(product.nome, product_name);
+    product.prezzo = product_price;
+    if(carts[id].status == INSIDE_SUPERMARKET) {
+        add_product(&carts[id], product);
         strcpy(response, "ok\n\0");
     } else {
-        //printf("Richiesta su carrello %d non in negozio\n", id);
-        strcpy(response, "Sessione scaduta\n\0");
+        strcpy(response, "Session timed out\n\0");
     }
 }
 
-void clientRemoves(int id, char* request, char* response, carrello_t* carrelli){
-    int id_prodotto;
-    sscanf(request, "cliente:%d:rimuovi\n:%d", &id, &id_prodotto);
-    if(remove_product(&carrelli[id], id_prodotto)) strcpy(response, "ok\n\0");
-    else strcpy(response, "Prodotto non trovato\n\0");
+void clientRemoves(int id, char* request, char* response, cart_t* carts){
+    int product_id;
+    sscanf(request, "cliente:%d:rimuovi\n:%d", &id, &product_id);
+    if(remove_product(&carts[id], product_id)) strcpy(response, "ok\n\0");
+    else strcpy(response, "Product not found\n\0");
 }
 
-void clientPrints(int id, char* response, carrello_t* carrelli){
-    print_cart(response, &carrelli[id]);
+void clientPrints(int id, char* response, cart_t* carts){
+    print_cart(response, &carts[id]);
 }
 
-void clientEntersCashQueue(int id, char* response, carrello_t* carrelli, coda_casse_t* casse){
-    if(carrelli[id].n_prodotti == 0) {
+void clientEntersCashQueue(int id, char* response, cart_t* carts, checkout_queue_t* casse){
+    if(carts[id].products_number == 0) {
         sprintf(response, "0\n");
-        pthread_mutex_unlock(&carrelli[id].mutex);
+        pthread_mutex_unlock(&carts[id].mutex);
         return;
     }
-    if(carrelli[id].status == IN_NEGOZIO) {
+    if(carts[id].status == INSIDE_SUPERMARKET) {
         add_client_to_cash_queue(id, casse);
-        carrelli[id].status = IN_CODA;
-        //printf("[TEST-CODACASSE] Cliente %d si è messo in coda. Clienti in coda: %d\n", id, numero_clienti_coda(casse));
+        carts[id].status = IN_QUEUE;
     }
     int position = position_client_cash_queue(id, casse);
-    if(position <= 0 && carrelli[id].status == IN_CODA) {
-        pthread_mutex_unlock(&carrelli[id].mutex);
+    if(position <= 0 && carts[id].status == IN_QUEUE) {
+        pthread_mutex_unlock(&carts[id].mutex);
     }
     sprintf(response, "%d\n", position);
 }
 
-void clientPays(int id, char* response, carrello_t* carrelli) {
-    if(carrelli[id].status == PAGAMENTO || carrelli[id].status == PAGATO) {
+void clientPays(int id, char* response, cart_t* carts) {
+    if(carts[id].status == PAYMENT || carts[id].status == PAYED) {
         sprintf(response, "ok\n");
-        carrelli[id].status = PAGATO;
+        carts[id].status = PAYED;
     } else {
-        if (carrelli[id].status == IN_NEGOZIO && carrelli[id].n_prodotti == 0) carrelli[id].status = CONFERMA;
-        sprintf(response, "Carrello in elaborazione\n");
+        if (carts[id].status == INSIDE_SUPERMARKET && carts[id].products_number == 0) carts[id].status = CONFIRM;
+        sprintf(response, "Processing cart...\n");
     }
 }
