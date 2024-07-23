@@ -78,7 +78,7 @@ class _CatalogPageState extends State<CatalogPage> {
   Future<void> entraNelSupermercato() async {
     bool assignedCart = false;
     try {
-      while (!assignedCart) {
+      while (true) {
         print('ho il carrello assegnato?' + assignedCart.toString());
         Socket socket = await Socket.connect(serverAddress, serverPort);
         print('cliente:(id_carrello)$idCarrello:entra');

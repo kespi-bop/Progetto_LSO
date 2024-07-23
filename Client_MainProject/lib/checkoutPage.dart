@@ -98,7 +98,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Future<void> mettiInCoda() async {
     bool itsmyturn = false;
     try {
-      while (!itsmyturn) {
+      while (true) {
         // Connessione al server
         if (prodotti.isNotEmpty) {
           Navigator.push(
@@ -158,7 +158,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Future<void> effettuaPagamento() async {
     bool canipay = false;
     try {
-      while (!canipay) {
+      while (true) {
         // Connessione al server
         if (prodotti.isNotEmpty) {
           Navigator.push(
