@@ -5,7 +5,7 @@ FROM gcc:latest
 WORKDIR /app
 
 # Copia i file sorgente nel container
-COPY main.c checkoutQueue.c cart.c cashier.c entranceQueue.c client.c checkoutQueue.h cart.h cashier.h entranceQueue.h client.h director.h director.c config.h catalogo.json /app/
+COPY main.c checkoutQueue.c cart.c cashier.c entranceQueue.c client.c checkoutQueue.h cart.h cashier.h entranceQueue.h client.h director.h director.c config.h catalog.json /app/
 
 # Compila il programma
 RUN gcc -Wall -Wextra -fsanitize=address -pthread -o server main.c checkoutQueue.c cart.c cashier.c entranceQueue.c client.c director.c

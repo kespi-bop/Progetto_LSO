@@ -1,0 +1,55 @@
+{
+    "productList": [
+      {
+        "id": 1,
+        "name": "Bread",
+        "price": 1.99
+      },
+      {
+        "id": 2,
+        "name": "Juice",
+        "price": 0.99
+      },
+      {
+        "id": 3,
+        "name": "Chocolate",
+        "price": 2.49
+      },
+      {
+        "id": 4,
+        "name": "Candies",
+        "price": 1.79
+      },
+      {
+        "id": 5,
+        "name": "Chicken",
+        "price": 5.99
+      },
+      {
+        "id": 6,
+        "name": "Hamburger",
+        "price": 2.29
+      },
+      {
+        "id": 7,
+        "name": "Apple",
+        "price": 0.69
+      },
+      {
+        "id": 8,
+        "name": "Deodorant",
+        "price": 1.49
+      },
+      {
+        "id": 9,
+        "name": "Wine",
+        "price": 3.99
+      },
+      {
+        "id": 10,
+        "name": "Water",
+        "price": 0.89
+      }
+    ]
+  }
+  

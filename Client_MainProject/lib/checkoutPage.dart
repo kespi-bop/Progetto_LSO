@@ -20,7 +20,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       '192.168.1.137'; // Modifica l'indirizzo IP del tuo server
   final int serverPort = 5050; // La porta su cui il server sta ascoltando
   String codaResponse = '';
-  List<Prodotto> prodotti = [];
+  List<Prodotto> productList = [];
   bool paid = false;
   bool hasNoProducts = false;
 
@@ -66,14 +66,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
     // Pulizia della stringa: rimuovere spazi bianchi
     response = response.trim();
 
-    // Divisione della stringa nei prodotti individuali
+    // Divisione della stringa nei productList individuali
     List<String> prodottiRaw = response.split('\n');
 
     // Rimuove gli spazi bianchi iniziali e finali per ogni elemento della lista
     prodottiRaw = prodottiRaw.map((p) => p.trim()).toList();
 
     // Parsing della stringa in oggetti Prodotto
-    prodotti = prodottiRaw.map((prodottoString) {
+    productList = prodottiRaw.map((prodottoString) {
       // Rimuove le parentesi graffe
       String cleanString = prodottoString.replaceAll(RegExp(r'[{}]'), '');
 
@@ -82,16 +82,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
       // Parsing delle parti
       int id = int.parse(parts[0]);
-      String nome = parts[1];
-      double prezzo = double.parse(parts[2]);
+      String name = parts[1];
+      double price = double.parse(parts[2]);
 
-      return Prodotto(id: id, nome: nome, prezzo: prezzo);
+      return Prodotto(id: id, name: name, price: price);
     }).toList();
 
     // Stampa i risultati
-    prodotti.forEach((prodotto) {
+    productList.forEach((prodotto) {
       print(
-          'ID: ${prodotto.id}, Nome: ${prodotto.nome}, Prezzo: ${prodotto.prezzo}');
+          'ID: ${prodotto.id}, Nome: ${prodotto.name}, Prezzo: ${prodotto.price}');
     });
   }
 
@@ -100,7 +100,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     try {
       while (true) {
         // Connessione al server
-        if (prodotti.isNotEmpty) {
+        if (productList.isNotEmpty) {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -160,7 +160,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     try {
       while (true) {
         // Connessione al server
-        if (prodotti.isNotEmpty) {
+        if (productList.isNotEmpty) {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -197,7 +197,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             paid = true;
             print('Sono pronto a stampare il carrello ' + widget.idCarrello);
           });
-          if (prodotti.length == 0) {
+          if (productList.length == 0) {
             setState(() {
               hasNoProducts = true;
             });
@@ -234,13 +234,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     children: [
                       Expanded(
                         child: ListView.builder(
-                          itemCount: prodotti.length,
+                          itemCount: productList.length,
                           itemBuilder: (context, index) {
-                            final item = prodotti[index];
+                            final item = productList[index];
                             return ListTile(
-                              title: Text(item.nome),
+                              title: Text(item.name),
                               subtitle:
-                                  Text('\$${item.prezzo.toStringAsFixed(2)}'),
+                                  Text('\$${item.price.toStringAsFixed(2)}'),
                             );
                           },
                         ),

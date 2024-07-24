@@ -39,7 +39,7 @@ void sendCatalog(char* response);
 void* reorderCarts();
 void* ui();
 void* bouncerAtEntrance();
-void print_stickman(int num_stickman);
+void print_emoji(int num_stickman);
 
 pthread_mutex_t mutex_cashiers = PTHREAD_MUTEX_INITIALIZER;
 
@@ -147,7 +147,7 @@ void send_response(int socket, char* response) {
 
 // Function to send the catalog to the client
 void sendCatalog(char* response) {
-    FILE* catalog = fopen("catalogo.json", "r");
+    FILE* catalog = fopen("catalog.json", "r");
     if(catalog == NULL) perror("Error in opening the catalog"), exit(1);
 
     char buffer[MAX_RESPONSE_SIZE];
@@ -219,23 +219,23 @@ void* ui(){
         printf("\nQUEUE OUTSIDE OF THE SUPERMARKET:\n");
         fflush(stdout);
         int people_entrance_queue = clients_number_entrance_queue(&entrance_queue);
-        print_stickman(people_entrance_queue);
+        print_emoji(people_entrance_queue);
         int people_checkout_queue = clients_number_checkout_queue(&checkout_queue);
         printf("\nINSIDE THE SUPERMARKET:\n");
-        print_stickman(people_inside);
+        print_emoji(people_inside);
         printf("\n");
         fflush(stdout);
         printf("QUEUE FOR THE CHECKOUT:\n");
         fflush(stdout);
-        print_stickman(people_checkout_queue);
+        print_emoji(people_checkout_queue);
         printf("\n");
         fflush(stdout);
         printf("AT THE CHECKOUT:\n");
-        print_stickman(people_checking_out);
+        print_emoji(people_checking_out);
         printf("\n");
         fflush(stdout);
         printf("GOT OUT WITHOUT BUYING ANYTHING:\n");
-        print_stickman(people_exiting);
+        print_emoji(people_exiting);
         printf("\n");
         fflush(stdout);
         sleep(1);
@@ -243,31 +243,8 @@ void* ui(){
     return NULL;
 }
 
-// void print_stickman(int num_stickman) {
-//     int i, j;
-    
-//     for (i = 0; i < 5; i++) {
-//         for (j = 0; j < num_stickman; j++) {
-//             if (i == 0)
-//                 printf(" O ");
-//             else if (i == 1)
-//                 printf("/|\\");
-//             else if (i == 2)
-//                 printf(" | ");
-//             else if (i == 3)
-//                 printf("/ \\");
-//             else
-//                 printf("   ");
-            
-//             printf("   "); // space between stickmans
-//         }
-//         printf("\n");
-//     }
-//     fflush(stdout);
-// }
-
 // Function to print the clients on the screen
-void print_stickman(int num_stickman) {
+void print_emoji(int num_stickman) {
     int i;
     for (i = 0; i < num_stickman; i++) {
         printf("(^_^)/");

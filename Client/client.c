@@ -116,43 +116,43 @@ void addById(char *request, char *response, int id_product)
     switch (id_product)
     {
     case 1:
-        strcpy(product_name, "Pasta");
+        strcpy(product_name, "Bread");
         product_price = 1.99;
         break;
     case 2:
-        strcpy(product_name, "Latte");
+        strcpy(product_name, "Juice");
         product_price = 0.99;
         break;
     case 3:
-        strcpy(product_name, "Pane");
+        strcpy(product_name, "Chocolate");
         product_price = 2.49;
         break;
     case 4:
-        strcpy(product_name, "Salsa di pomodoro");
+        strcpy(product_name, "Candies");
         product_price = 1.79;
         break;
     case 5:
-        strcpy(product_name, "Pollo");
+        strcpy(product_name, "Chicken");
         product_price = 5.99;
         break;
     case 6:
-        strcpy(product_name, "Uova");
+        strcpy(product_name, "Hamburger");
         product_price = 2.29;
         break;
     case 7:
-        strcpy(product_name, "Banane");
+        strcpy(product_name, "Apple");
         product_price = 0.69;
         break;
     case 8:
-        strcpy(product_name, "Yogurt");
+        strcpy(product_name, "Deodorant");
         product_price = 1.49;
         break;
     case 9:
-        strcpy(product_name, "Cereali");
+        strcpy(product_name, "Wine");
         product_price = 3.99;
         break;
     case 10:
-        strcpy(product_name, "Acqua minerale");
+        strcpy(product_name, "Water");
         product_price = 0.89;
         break;
     }
@@ -265,16 +265,16 @@ void printCatalog(char *request, char *response)
 void addItem(char *request, char *response)
 {
     int id_product;
-    printf("1. Pasta\n");
-    printf("2. Latte\n");
-    printf("3. Pane\n");
-    printf("4. Salsa di pomodoro\n");
-    printf("5. Pollo\n");
-    printf("6. Uova\n");
-    printf("7. Banane\n");
-    printf("8. Yogurt\n");
-    printf("9. Cereali\n");
-    printf("10. Acqua minerale\n");
+    printf("1. Bread\n");
+    printf("2. Juice\n");
+    printf("3. Chocolate\n");
+    printf("4. Candies\n");
+    printf("5. Chicken\n");
+    printf("6. Hamburger\n");
+    printf("7. Apple\n");
+    printf("8. Deodorant\n");
+    printf("9. Wine\n");
+    printf("10. Water\n");
 
     printf("Insert the ID of the product to add: ");
     scanf("%d", &id_product);

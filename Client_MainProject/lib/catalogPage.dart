@@ -126,7 +126,7 @@ class _CatalogPageState extends State<CatalogPage> {
           'Connected to: ${socket.remoteAddress.address}:${socket.remotePort}'); */
       // Il cliente si mette in queue
       Socket socket = await Socket.connect(serverAddress, serverPort);
-      socket.write('catalog');
+      socket.write('catalog\n');
       // Ricevi una risposta dal server
       await for (var event in socket) {
         String response = String.fromCharCodes(event);
@@ -135,7 +135,7 @@ class _CatalogPageState extends State<CatalogPage> {
         final Map<String, dynamic> decodedJson = jsonDecode(response);
 
         // Extract the list of products from the decoded JSON
-        final List<dynamic> productsJson = decodedJson['prodotti'];
+        final List<dynamic> productsJson = decodedJson['productList'];
 
         // Convert the JSON list into a List<Prodotto>
         _products = productsJson.map((productJson) {
@@ -144,7 +144,7 @@ class _CatalogPageState extends State<CatalogPage> {
         // Print the products to verify
         _products.forEach((product) {
           print(
-              'ID: ${product.id}, Nome: ${product.nome}, Prezzo: ${product.prezzo}');
+              'ID: ${product.id}, Nome: ${product.name}, Prezzo: ${product.price}');
         });
       }
       await socket.close();
@@ -183,9 +183,9 @@ class _CatalogPageState extends State<CatalogPage> {
           "e il prodotto è: " +
           product.id.toString());
       print(
-          "client:$idCarrello:add\n:${product.id}:${product.nome}:${product.prezzo}");
+          "client:$idCarrello:add\n:${product.id}:${product.name}:${product.price}");
       socket.write(
-          "client:$idCarrello:add\n:${product.id}:${product.nome}:${product.prezzo}");
+          "client:$idCarrello:add\n:${product.id}:${product.name}:${product.price}");
       // Ricevi una risposta dal server
       await for (var event in socket) {
         String response = String.fromCharCodes(event);
@@ -217,7 +217,7 @@ class _CatalogPageState extends State<CatalogPage> {
 
   double get _totalPrice {
     return _cart.entries
-        .map((entry) => entry.key.prezzo * entry.value)
+        .map((entry) => entry.key.price * entry.value)
         .fold(0.0, (prev, amount) => prev + amount);
   }
 
@@ -235,8 +235,8 @@ class _CatalogPageState extends State<CatalogPage> {
                       final quantity = _cart[item] ?? 0;
 
                       return ListTile(
-                        title: Text(item.nome),
-                        subtitle: Text('\$${item.prezzo.toStringAsFixed(2)}'),
+                        title: Text(item.name),
+                        subtitle: Text('\$${item.price.toStringAsFixed(2)}'),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [

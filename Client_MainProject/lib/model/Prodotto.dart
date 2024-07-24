@@ -1,20 +1,20 @@
 class Prodotto {
   final int id;
-  final String nome;
-  final double prezzo;
+  final String name;
+  final double price;
 
   Prodotto({
     required this.id,
-    required this.nome,
-    required this.prezzo,
+    required this.name,
+    required this.price,
   });
 
   //a factory constructor to create an instance from JSON
   factory Prodotto.fromJson(Map<String, dynamic> json) {
     return Prodotto(
       id: json['id'],
-      nome: json['nome'],
-      prezzo: json['prezzo'],
+      name: json['name'],
+      price: json['price'],
     );
   }
 }

@@ -18,7 +18,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
       '192.168.1.137'; // Modifica l'indirizzo IP del tuo server
   final int serverPort = 5050; // La porta su cui il server sta ascoltando
   String codaResponse = '';
-  List<Prodotto> prodotti = [];
+  List<Prodotto> productList = [];
   bool paid = false;
   bool hasNoProducts = false;
 
@@ -64,14 +64,14 @@ class _ReceiptPageState extends State<ReceiptPage> {
     // Pulizia della stringa: rimuovere spazi bianchi
     response = response.trim();
 
-    // Divisione della stringa nei prodotti individuali
+    // Divisione della stringa nei productList individuali
     List<String> prodottiRaw = response.split('\n');
 
     // Rimuove gli spazi bianchi iniziali e finali per ogni elemento della lista
     prodottiRaw = prodottiRaw.map((p) => p.trim()).toList();
 
     // Parsing della stringa in oggetti Prodotto
-    prodotti = prodottiRaw.map((prodottoString) {
+    productList = prodottiRaw.map((prodottoString) {
       // Rimuove le parentesi graffe
       String cleanString = prodottoString.replaceAll(RegExp(r'[{}]'), '');
 
@@ -80,10 +80,10 @@ class _ReceiptPageState extends State<ReceiptPage> {
 
       // Parsing delle parti
       int id = int.parse(parts[0]);
-      String nome = parts[1];
-      double prezzo = double.parse(parts[2]);
+      String name = parts[1];
+      double price = double.parse(parts[2]);
 
-      return Prodotto(id: id, nome: nome, prezzo: prezzo);
+      return Prodotto(id: id, name: name, price: price);
     }).toList();
   }
 
@@ -98,12 +98,12 @@ class _ReceiptPageState extends State<ReceiptPage> {
           children: [
             Expanded(
               child: ListView.builder(
-                itemCount: prodotti.length,
+                itemCount: productList.length,
                 itemBuilder: (context, index) {
-                  final item = prodotti[index];
+                  final item = productList[index];
                   return ListTile(
-                    title: Text(item.nome),
-                    subtitle: Text('\$${item.prezzo.toStringAsFixed(2)}'),
+                    title: Text(item.name),
+                    subtitle: Text('\$${item.price.toStringAsFixed(2)}'),
                   );
                 },
               ),
@@ -112,7 +112,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
                 padding: EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    if (prodotti.isEmpty)
+                    if (productList.isEmpty)
                       const Text('No products in the cart')
                     else
                       const Text(''),
