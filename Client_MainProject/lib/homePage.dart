@@ -54,19 +54,31 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Supermarket App')),
-      body: iWannaEnter
-          ? CatalogPage(id: id)
-          : Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    iWannaEnter = true;
-                  });
-                },
-                child: const Text('Enter the supermarket'),
-              ),
-            ),
-    );
+        appBar: AppBar(title: const Text('Supermarket App')),
+        body: iWannaEnter
+            ? CatalogPage(id: id)
+            : Container(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Spacer(flex: 1),
+                    Image.asset(
+                      'assets/supermarket.png',
+                      width: 300,
+                      height: 300,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          iWannaEnter = true;
+                        });
+                      },
+                      child: const Text('Enter the supermarket'),
+                    ),
+                    Spacer(flex: 3),
+                  ],
+                ),
+              ));
   }
 }

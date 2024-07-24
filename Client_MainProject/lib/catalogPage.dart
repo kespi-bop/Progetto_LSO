@@ -224,62 +224,74 @@ class _CatalogPageState extends State<CatalogPage> {
   @override
   Widget build(BuildContext context) {
     return imInTheStore
-        ? Scaffold(
-            body: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _products.length,
-                    itemBuilder: (context, index) {
-                      final item = _products[index];
-                      final quantity = _cart[item] ?? 0;
+        ? Column(
+            children: [
+              Image.asset('assets/robotmarket.png', width: 350),
+              // Usa Expanded per il widget Scaffold
+              Expanded(
+                child: Scaffold(
+                  body: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _products.length,
+                          itemBuilder: (context, index) {
+                            final item = _products[index];
+                            final quantity = _cart[item] ?? 0;
 
-                      return ListTile(
-                        title: Text(item.name),
-                        subtitle: Text('\$${item.price.toStringAsFixed(2)}'),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove),
-                              onPressed: quantity > 0
-                                  ? () => _toggleItem(item, false)
-                                  : null,
-                            ),
-                            Text('$quantity'),
-                            IconButton(
-                              icon: const Icon(Icons.add),
-                              onPressed: () => _toggleItem(item, true),
-                            ),
-                          ],
+                            return ListTile(
+                              title: Text(item.name),
+                              subtitle:
+                                  Text('\$${item.price.toStringAsFixed(2)}'),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.remove),
+                                    onPressed: quantity > 0
+                                        ? () => _toggleItem(item, false)
+                                        : null,
+                                  ),
+                                  Text('$quantity'),
+                                  IconButton(
+                                    icon: const Icon(Icons.add),
+                                    onPressed: () => _toggleItem(item, true),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text('Total: \$${_totalPrice.toStringAsFixed(2)}',
-                      style: Theme.of(context).textTheme.headlineMedium),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      // Navigate to the checkout page after loading
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CheckoutPage(
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'Total: \$${_totalPrice.toStringAsFixed(2)}',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            // Navigate to the checkout page after loading
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CheckoutPage(
                                   idCarrello: idCarrello,
-                                )),
-                      );
-                    },
-                    child: const Text('Join the checkout queue'),
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text('Join the checkout queue'),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           )
         : const Center(child: CircularProgressIndicator());
   }

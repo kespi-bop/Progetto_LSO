@@ -245,6 +245,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           },
                         ),
                       ),
+                      if (productList.isEmpty)
+                        const Text('No products in the cart')
+                      else
+                        const Text(''),
                       Padding(
                           padding: EdgeInsets.all(16.0),
                           child: Column(

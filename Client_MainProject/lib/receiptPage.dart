@@ -91,7 +91,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          automaticallyImplyLeading: false, title: const Text('Checkout')),
+          automaticallyImplyLeading: false, title: const Text('Receipt')),
       body: Center(
           child: Scaffold(
         body: Column(
@@ -108,6 +108,15 @@ class _ReceiptPageState extends State<ReceiptPage> {
                 },
               ),
             ),
+            Image.asset(
+              'assets/robotgoodbye.png',
+              height: 200,
+            ),
+            if (productList.isNotEmpty)
+              Text("Thank you for shopping with us!")
+            else
+              Text(''),
+            Text("Hope to see you soon!"),
             Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Column(
