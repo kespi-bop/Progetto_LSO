@@ -1,11 +1,11 @@
-#ifndef CASSIERE_H
-#define CASSIERE_H
+#ifndef CASHIER_H
+#define CASHIER_H
 
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
-#include "carrello.h"
-#include "codaCassa.h"
+#include "cart.h"
+#include "checkoutQueue.h"
 #include "config.h"
 
 // Structure for the cashier

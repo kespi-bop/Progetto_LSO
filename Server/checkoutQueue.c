@@ -1,4 +1,4 @@
-#include "codaCassa.h"
+#include "checkoutQueue.h"
 
 // Class to manage the queue for the checkout
 

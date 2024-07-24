@@ -1,13 +1,13 @@
-#ifndef CLIENTECONTROLLER_H 
-#define CLIENTECONTROLLER_H
+#ifndef CLIENTCONTROLLER_H 
+#define CLIENTCONTROLLER_H
 
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
-#include "carrello.h"
-#include "codaCassa.h"
+#include "cart.h"
+#include "checkoutQueue.h"
 #include "config.h"
-#include "codaIngresso.h"
+#include "entranceQueue.h"
 
 void decrease_clients_number();
 void increase_clients_number();

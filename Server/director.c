@@ -1,4 +1,4 @@
-#include "direttore.h"
+#include "director.h"
 
 // Function to check if a client has the approval of the director to get out in case he doesn't have any items in the cart
 void* checkExit(void* ptr){

@@ -1,9 +1,3 @@
-/*
- * Client che si connette al server e invia una richiesta
- * e stampa la risposta
- */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,23 +15,23 @@
 void send_request(int socket, char * request);
 void read_response(int socket, char * response);
 
-int getScelta();
-void printmenu();
+int getChoice();
+void printMenu();
 
-void ingresso(char* request, char* response);
-void entra(char* request, char* response);
-void esci(char* request, char* response);
-void aggiungi(char* request, char* response);
-void rimuovi(char* request, char* response);
-void stampa(char* request, char* response);
-void mettiInCoda(char* request, char* response);
-void paga(char* request, char* response);
-void stampaCatalogo(char* request, char* response);
-void aggiungi_con_id(char* request, char* response, int id_prodotto);
-void autopilota(char* request, char* response);
+void entrance(char* request, char* response);
+void enter(char* request, char* response);
+void exitFromStore(char* request, char* response);
+void addItem(char* request, char* response);
+void removeItem(char* request, char* response);
+void printCart(char* request, char* response);
+void joinCheckoutQueue(char* request, char* response);
+void pay(char* request, char* response);
+void printCatalog(char* request, char* response);
+void addById(char* request, char* response, int id_prodotto);
+void simulation(char* request, char* response);
 
-int id_carrello =-1;
-int id_cliente =-1;
+int id_cart =-1;
+int id_client =-1;
 
 int main() {
     srand(time(NULL));
@@ -46,22 +40,22 @@ int main() {
         char response[MAX_RESPONSE_SIZE];
 
         system("clear");        
-        int scelta = getScelta();
-        switch (scelta) {
-            case 1: ingresso(request,response); break;
-            case 2: entra(request, response); break;
-            case 3: stampaCatalogo(request, response); break;
-            case 4: aggiungi(request, response); break;
-            case 5: rimuovi(request, response); break;
-            case 6: stampa(request, response); break;
-            case 7: mettiInCoda(request, response); break;
-            case 8: paga(request, response); break;
-            case 9: esci(request, response); exit(0);
+        int choice = getChoice();
+        switch (choice) {
+            case 1: entrance(request,response); break;
+            case 2: enter(request, response); break;
+            case 3: printCatalog(request, response); break;
+            case 4: addItem(request, response); break;
+            case 5: removeItem(request, response); break;
+            case 6: printCart(request, response); break;
+            case 7: joinCheckoutQueue(request, response); break;
+            case 8: pay(request, response); break;
+            case 9: exitFromStore(request, response); exit(0);
         }
-        printf("Richiesta: %s\n", request);
-        printf("Risposta: %s\n", response);
+        printf("Request: %s\n", request);
+        printf("Responser: %s\n", response);
         memset(response, 0, MAX_RESPONSE_SIZE);
-        printf("Premi invio per continuare...");
+        printf("Press enter to continue...\n");
         getchar();
         getchar();
 
@@ -93,23 +87,23 @@ int create_socket(){
     return sockfd;
 }
 
-void aggiungi_con_id(char* request, char* response, int id_prodotto){
+void addById(char* request, char* response, int id_product){
     int sockfd=create_socket();
-    char nome_prodotto[50];
-    float prezzo_prodotto;
-    switch (id_prodotto) {
-        case 1: strcpy(nome_prodotto, "Pasta"); prezzo_prodotto = 1.99; break;
-        case 2: strcpy(nome_prodotto, "Latte"); prezzo_prodotto = 0.99; break;
-        case 3: strcpy(nome_prodotto, "Pane"); prezzo_prodotto = 2.49; break;
-        case 4: strcpy(nome_prodotto, "Salsa di pomodoro"); prezzo_prodotto = 1.79; break;
-        case 5: strcpy(nome_prodotto, "Pollo"); prezzo_prodotto = 5.99; break;
-        case 6: strcpy(nome_prodotto, "Uova"); prezzo_prodotto = 2.29; break;
-        case 7: strcpy(nome_prodotto, "Banane"); prezzo_prodotto = 0.69; break;
-        case 8: strcpy(nome_prodotto, "Yogurt"); prezzo_prodotto = 1.49; break;
-        case 9: strcpy(nome_prodotto, "Cereali"); prezzo_prodotto = 3.99; break;
-        case 10: strcpy(nome_prodotto, "Acqua minerale"); prezzo_prodotto = 0.89; break;
+    char product_name[50];
+    float product_price;
+    switch (id_product) {
+        case 1: strcpy(product_name, "Pasta"); product_price = 1.99; break;
+        case 2: strcpy(product_name, "Latte"); product_price = 0.99; break;
+        case 3: strcpy(product_name, "Pane"); product_price = 2.49; break;
+        case 4: strcpy(product_name, "Salsa di pomodoro"); product_price = 1.79; break;
+        case 5: strcpy(product_name, "Pollo"); product_price = 5.99; break;
+        case 6: strcpy(product_name, "Uova"); product_price = 2.29; break;
+        case 7: strcpy(product_name, "Banane"); product_price = 0.69; break;
+        case 8: strcpy(product_name, "Yogurt"); product_price = 1.49; break;
+        case 9: strcpy(product_name, "Cereali"); product_price = 3.99; break;
+        case 10: strcpy(product_name, "Acqua minerale"); product_price = 0.89; break;
     }
-    sprintf(request, "cliente:%d:aggiungi\n:%d:%s:%f", id_carrello, id_prodotto, nome_prodotto, prezzo_prodotto);
+    sprintf(request, "cliente:%d:aggiungi\n:%d:%s:%f", id_cart, id_product, product_name, product_price);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
@@ -125,64 +119,64 @@ void read_response(int socket, char * response) {
     if(read(socket, response, MAX_RESPONSE_SIZE) == -1) perror("Read"), exit(1);
 }
 
-int getScelta() {
-    int scelta;
+int getChoice() {
+    int choice;
     while (1) {
-        printmenu();
-        printf("Inserisci la tua scelta: ");
-        scanf("%d", &scelta);
-        if (scelta >= 1 && scelta <= 9) {
-            return scelta;
+        printMenu();
+        printf("Insert your choice: ");
+        scanf("%d", &choice);
+        if (choice >= 1 && choice <= 9) {
+            return choice;
         } else {
             system("clear");
-            printf("Scelta non valida\n\n");
+            printf("Invalid choice!\n\n");
         }
     }
 }
 
-void printmenu() {
-    printf("1. Mettiti in coda per entrare al negozio\n");
-    printf("2. Entra nel negozio\n");
-    printf("3. Stampa catalogo\n");
-    printf("4. Aggiungi un prodotto al carrello\n");
-    printf("5. Rimuovi un prodotto dal carrello\n");
-    printf("6. Stampa il carrello\n");
-    printf("7. Mettiti in coda alla cassa\n");
-    printf("8. Paga\n");
-    printf("9. Esci dal negozio\n");
+void printMenu() {
+    printf("1. Join the entrance queue\n");
+    printf("2. Enter the supermarket\n");
+    printf("3. Print catalog\n");
+    printf("4. Add a product to cart\n");
+    printf("5. Remove a product from cart\n");
+    printf("6. Print the cart\n");
+    printf("7. Join the checkout queue\n");
+    printf("8. Pay\n");
+    printf("9. Exit the supermarket\n");
 }
 
-void ingresso(char* request, char* response){
+void entrance(char* request, char* response){
     int position=-1;
     int sockfd=create_socket();
-    sprintf(request, "cliente:%d:ingresso\n", id_cliente);
+    sprintf(request, "cliente:%d:ingresso\n", id_client);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
-    if (strstr(response, "ID_cliente") != NULL) sscanf(response, "ID_cliente:%d:%d\n", &id_cliente, &position);
+    if (strstr(response, "ID_cliente") != NULL) sscanf(response, "ID_cliente:%d:%d\n", &id_client, &position);
     close(sockfd);
 }
 
-void entra(char* request, char* response) {
+void enter(char* request, char* response) {
     int sockfd=create_socket();
-    sprintf(request, "cliente:%d:entra\n", id_carrello);
+    sprintf(request, "cliente:%d:entra\n", id_cart);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
-    if (strstr(response, "ID_carrello") != NULL) sscanf(response, "ID_carrello:%d\n", &id_carrello);
+    if (strstr(response, "ID_carrello") != NULL) sscanf(response, "ID_carrello:%d\n", &id_cart);
     close(sockfd);
 }
 
-void esci(char* request, char* response) {
+void exitFromStore(char* request, char* response) {
     int sockfd=create_socket();
-    sprintf(request, "cliente:%d:esce\n", id_carrello);
+    sprintf(request, "cliente:%d:esce\n", id_cart);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
     close(sockfd);
 }
 
-void stampaCatalogo(char* request, char* response) {
+void printCatalog(char* request, char* response) {
     int sockfd=create_socket();
     sprintf(request, "catalogo\n");
     send_request(sockfd, request);
@@ -192,8 +186,8 @@ void stampaCatalogo(char* request, char* response) {
 }
 
 
-void aggiungi(char* request, char* response) {
-    int id_prodotto;
+void addItem(char* request, char* response) {
+    int id_product;
     printf("1. Pasta\n");
     printf("2. Latte\n");
     printf("3. Pane\n");
@@ -205,44 +199,44 @@ void aggiungi(char* request, char* response) {
     printf("9. Cereali\n");
     printf("10. Acqua minerale\n");
 
-    printf("Inserisci l'ID del prodotto: ");
-    scanf("%d", &id_prodotto);
-    aggiungi_con_id(request,response,id_prodotto);
+    printf("Insert the ID of the product to add: ");
+    scanf("%d", &id_product);
+    addById(request,response,id_product);
 }
 
-void rimuovi(char* request, char* response) {
+void removeItem(char* request, char* response) {
     int sockfd=create_socket();
-    int id_prodotto;
-    printf("Inserisci l'ID del prodotto da rimuovere: ");
-    scanf("%d", &id_prodotto);
-    sprintf(request, "cliente:%d:rimuovi\n:%d", id_carrello, id_prodotto);
+    int id_product;
+    printf("Insert the ID of the product to remove: ");
+    scanf("%d", &id_product);
+    sprintf(request, "cliente:%d:rimuovi\n:%d", id_cart, id_product);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
     close(sockfd);
 }
 
-void stampa(char* request, char* response) {
+void printCart(char* request, char* response) {
     int sockfd=create_socket();
-    sprintf(request, "cliente:%d:stampa", id_carrello);
+    sprintf(request, "cliente:%d:stampa", id_cart);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
     close(sockfd);
 }
 
-void mettiInCoda(char* request, char* response) {
+void joinCheckoutQueue(char* request, char* response) {
     int sockfd=create_socket();
-    sprintf(request, "cliente:%d:coda", id_carrello);
+    sprintf(request, "cliente:%d:coda", id_cart);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
     close(sockfd);
 }
 
-void paga(char* request, char* response) {
+void pay(char* request, char* response) {
     int sockfd=create_socket();
-    sprintf(request, "cliente:%d:paga", id_carrello);
+    sprintf(request, "cliente:%d:paga", id_cart);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);

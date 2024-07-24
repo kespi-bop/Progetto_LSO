@@ -1,4 +1,4 @@
-#include "cassiere.h"
+#include "cashier.h"
 
 // Function to create a cashier
 void cashierEnters(int id, int cashierTime, int productProcessingTime, cart_t* carts, checkout_queue_t* checkout_queue) {

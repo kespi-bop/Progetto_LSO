@@ -1,5 +1,5 @@
-#ifndef CODAINGRESSO_H
-#define CODAINGRESSO_H
+#ifndef ENTRANCEQUEUE_H
+#define ENTRANCEQUEUE_H
 
 #include <stdio.h>
 #include <stdlib.h>

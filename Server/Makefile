@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -fsanitize=address -pthread
 
-SRCS = main.c codaCassa.c carrello.c cassiere.c codaIngresso.c cliente.c direttore.c
+SRCS = main.c checkoutQueue.c cart.c cashier.c entranceQueue.c cliente.c director.c
 OBJS = $(SRCS:.c=.o)
 TARGET = server
 

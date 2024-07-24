@@ -1,4 +1,4 @@
-#include "carrello.h"
+#include "cart.h"
 
 // Function to add a product to the cart
 void add_product(cart_t* cart, product_t product) {
