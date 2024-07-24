@@ -9,13 +9,13 @@
 #include <semaphore.h>
 #include <sys/socket.h>
 
-#include "carrello.h"
+#include "cart.h"
 #include "cliente.h"
-#include "codaCassa.h"
+#include "checkoutQueue.h"
 #include "config.h"
-#include "cassiere.h"
-#include "codaIngresso.h"
-#include "direttore.h"
+#include "cashier.h"
+#include "entranceQueue.h"
+#include "director.h"
 
 cart_t carts[C_VARIABLE];
 checkout_queue_t checkout_queue;
