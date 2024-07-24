@@ -41,9 +41,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
       print('il cliente con carrello ' +
           widget.idCarrello +
-          ' stampa il suo carrello:\n');
-      // Invia la richiesta di mettersi in coda alla cassa
-      String request = 'cliente:${widget.idCarrello}:stampa';
+          ' prints il suo carrello:\n');
+      // Invia la richiesta di mettersi in queue alla cassa
+      String request = 'client:${widget.idCarrello}:prints';
       socket.write(request);
 
       // Ricevi la risposta dal server
@@ -122,16 +122,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
         print('il cliente con carrello ' +
             widget.idCarrello +
-            ' si mette in coda alla cassa');
-        // Invia la richiesta di mettersi in coda alla cassa
-        String request = 'cliente:${widget.idCarrello}:coda';
+            ' si mette in queue alla cassa');
+        // Invia la richiesta di mettersi in queue alla cassa
+        String request = 'client:${widget.idCarrello}:queue';
         socket.write(request);
 
         // Ricevi la risposta dal server
         await for (var event in socket) {
           String response = String.fromCharCodes(event);
           response = response.trim();
-          print('sono in coda alla posizione ' + response);
+          print('sono in queue alla posizione ' + response);
           if (response == '0' || response == '0\n') {
             print('è il turno del cliente col carrello' + widget.idCarrello);
             print('la risposta è' + response);
@@ -175,15 +175,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
         print(
             'il cliente con carrello ' + widget.idCarrello + ' prova a pagare');
-        // Invia la richiesta di mettersi in coda alla cassa
-        String request = 'cliente:${widget.idCarrello}:paga';
+        // Invia la richiesta di mettersi in queue alla cassa
+        String request = 'client:${widget.idCarrello}:pay';
         socket.write(request);
 
         // Ricevi la risposta dal server
         await for (var event in socket) {
           String response = String.fromCharCodes(event);
           print('il carrello è in elaborazione??' + response);
-          if (response != 'Carrello in elaborazione\n') {
+          if (response != 'processing cart\n') {
             print('il carrello ' + widget.idCarrello + ' è stato elaborato');
             print('la risposta è' + response);
             canipay = true;

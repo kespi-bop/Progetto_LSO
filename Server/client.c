@@ -35,19 +35,19 @@ void clientParser(char* request, char* response, cart_t* carts, checkout_queue_t
     int id;
     char command[10];
     char data[100];
-    sscanf(request, "cliente:%d:%s\n:%s", &id, command, data);
-    if(strcmp(command, "entra") == 0) clientEnters(&id, response, carts, entrance_queue);
-    else if(strcmp(command, "ingresso") == 0) clientEntersInEntranceQueue(id, response, entrance_queue);
-    else if(carts[id].status == FREE) { strcpy(response, "Sessione scaduta\n\0"); return; }
-    else if(strcmp(command, "esce") == 0) clientExits(id, response, carts);
-    else if(strcmp(command, "aggiungi") == 0) clientAddItem(id, request, response, carts);
-    else if(strcmp(command, "rimuovi") == 0) clientRemoveItem(id, request, response, carts);
-    else if(strcmp(command, "stampa") == 0) clientPrintCartContent(id, response, carts);
-    else if(strcmp(command, "coda") == 0) clientEntersCheckoutQueue(id, response, carts, checkouts_queue);
-    else if(strcmp(command, "paga") == 0) clientPays(id, response, carts);
+    sscanf(request, "client:%d:%s\n:%s", &id, command, data);
+    if(strcmp(command, "enter") == 0) clientEnters(&id, response, carts, entrance_queue);
+    else if(strcmp(command, "entrance") == 0) clientEntersInEntranceQueue(id, response, entrance_queue);
+    else if(carts[id].status == FREE) { strcpy(response, "expired session\n\0"); return; }
+    else if(strcmp(command, "exits") == 0) clientExits(id, response, carts);
+    else if(strcmp(command, "add") == 0) clientAddItem(id, request, response, carts);
+    else if(strcmp(command, "remove") == 0) clientRemoveItem(id, request, response, carts);
+    else if(strcmp(command, "prints") == 0) clientPrintCartContent(id, response, carts);
+    else if(strcmp(command, "queue") == 0) clientEntersCheckoutQueue(id, response, carts, checkouts_queue);
+    else if(strcmp(command, "pay") == 0) clientPays(id, response, carts);
     else strcpy(response, "Comando non riconosciuto\n\0");
 
-    if(strcmp(command, "esce") != 0 && strcmp(command, "ingresso") != 0 && id >= 0) {
+    if(strcmp(command, "exits") != 0 && strcmp(command, "entrance") != 0 && id >= 0) {
         carts[id].last_operation = time(NULL);
     }
 
@@ -66,7 +66,7 @@ void clientEnters(int* id, char* response, cart_t* carts, entrance_queue_t* entr
         pthread_mutex_lock(&carts[i].mutex);
         carts[i].status = INSIDE_SUPERMARKET;
         carts[i].last_operation = time(NULL);
-        sprintf(response, "ID_carrello:%d\n", i);
+        sprintf(response, "ID_cart:%d\n", i);
         *id = i;
     }
 }
@@ -95,7 +95,7 @@ void clientEntersInEntranceQueue(int id, char* response, entrance_queue_t* entra
         add_client_to_entrance_queue(id, entrance_queue);
     }
     int position = position_client_entrance_queue(id, entrance_queue);
-    sprintf(response, "ID_cliente:%d:%d\n", id, position);
+    sprintf(response, "ID_client:%d:%d\n", id, position);
 }
 
 // Function to manage the exit of the client
@@ -104,9 +104,9 @@ void clientExits(int id, char* response, cart_t* carts){
         clear_cart(&carts[id]);
         carts[id].status = FREE;
         decrease_clients_number();
-        strcpy(response, "Sei uscito dal negozio\n\0");
+        strcpy(response, "you left the supermarket\n\0");
     } else {
-        strcpy(response, "Sessione scaduta\n\0");
+        strcpy(response, "expired session\n\0");
     }
     
 }
@@ -116,7 +116,7 @@ void clientAddItem(int id, char* request, char* response, cart_t* carts){
     int product_id;
     char product_name[50];
     float product_price;
-    sscanf(request, "cliente:%d:aggiungi\n:%d:%[^:]:%f", &id, &product_id, product_name, &product_price);
+    sscanf(request, "client:%d:add\n:%d:%[^:]:%f", &id, &product_id, product_name, &product_price);
     product_t product;
     product.id = product_id;
     strcpy(product.name, product_name);
@@ -125,16 +125,16 @@ void clientAddItem(int id, char* request, char* response, cart_t* carts){
         add_product(&carts[id], product);
         strcpy(response, "ok\n\0");
     } else {
-        strcpy(response, "Sessione scaduta\n\0");
+        strcpy(response, "expired session\n\0");
     }
 }
 
 // Function to manage the removal of a product from the cart
 void clientRemoveItem(int id, char* request, char* response, cart_t* carts){
     int product_id;
-    sscanf(request, "cliente:%d:rimuovi\n:%d", &id, &product_id);
+    sscanf(request, "client:%d:remove\n:%d", &id, &product_id);
     if(remove_product(&carts[id], product_id)) strcpy(response, "ok\n\0");
-    else strcpy(response, "Prodotto non trovato\n\0");
+    else strcpy(response, "product not found\n\0");
 }
 
 // Function to manage the print of the cart
@@ -169,6 +169,6 @@ void clientPays(int id, char* response, cart_t* carts) {
         carts[id].status = PAYED;
     } else {
         if (carts[id].status == INSIDE_SUPERMARKET && carts[id].products_number == 0) carts[id].status = CONFIRM;
-        sprintf(response, "Carrello in elaborazione\n");
+        sprintf(response, "processing cart\n");
     }
 }

@@ -15,10 +15,10 @@
 extern pthread_mutex_t mutex_entrance_queue;
 
 // Node for the entrance queue
-typedef struct nodoIngresso {
+typedef struct entranceNode {
     int client_id;
     time_t last_operation;
-    struct nodoIngresso* next;
+    struct entranceNode* next;
 } entrance_node_t;
 
 typedef struct {

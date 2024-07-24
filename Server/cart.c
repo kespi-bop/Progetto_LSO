@@ -8,11 +8,11 @@ void add_product(cart_t* cart, product_t product) {
     new_cart_node->next = NULL;
 
     if (cart->head == NULL) {
-        // La coda è vuota, il nuovo cart_node diventa la testa e la coda
+        // La queue è vuota, il nuovo cart_node diventa la testa e la queue
         cart->head = new_cart_node;
         cart->tail = new_cart_node;
     } else {
-        // Aggiunta del nuovo cart_node in coda
+        // Aggiunta del nuovo cart_node in queue
         cart->tail->next = new_cart_node;
         cart->tail = new_cart_node;
     }
@@ -36,7 +36,7 @@ bool remove_product(cart_t* cart, int product_id) {
                 previous_cart_node->next = current_cart_node->next;
             }
 
-            // Se il cart_node corrente è la coda, aggiornamento della coda
+            // Se il cart_node corrente è la queue, aggiornamento della queue
             if (current_cart_node == cart->tail) {
                 cart->tail = previous_cart_node;
             }

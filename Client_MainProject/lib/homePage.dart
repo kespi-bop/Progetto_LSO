@@ -31,18 +31,18 @@ class _HomePageState extends State<HomePage> {
       Socket socket = await Socket.connect(serverAddress, serverPort);
 /*       print(
           'Connected to: ${socket.remoteAddress.address}:${socket.remotePort}'); */
-      // Il cliente si mette in coda
-      socket.write('cliente:-1:ingresso');
+      // Il cliente si mette in queue
+      socket.write('client:-1:entrance');
       // Ricevi una risposta dal server
       await for (var event in socket) {
         String response = String.fromCharCodes(event);
         print('Server: $response');
-        if (response.contains("ID_cliente")) {
-          // Estrai la parte della stringa dopo "ID_cliente:"
-          String data = response.substring(
-              response.indexOf("ID_cliente:") + "ID_cliente:".length);
+        if (response.contains("ID_client")) {
+          // Estrai la parte della stringa dopo "ID_client:"
+          String data = response
+              .substring(response.indexOf("ID_client:") + "ID_client:".length);
           id = data.split(':').first;
-          print('il cliente' + id + 'si mette in coda');
+          print('il cliente' + id + 'si mette in queue');
         }
       }
       socket.close();

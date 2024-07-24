@@ -39,15 +39,15 @@ class _CatalogPageState extends State<CatalogPage> {
         print('Sono entrato?' + entrato.toString());
         Socket socket = await Socket.connect(serverAddress, serverPort);
         print('Socket APERTA');
-        socket.write('cliente:${widget.id}:ingresso');
+        socket.write('client:${widget.id}:entrance');
         print("CLIENTE:${widget.id}:INGRESSO");
         await for (var event in socket) {
           String response = String.fromCharCodes(event);
           print(response);
 
-          if (response.contains("ID_cliente")) {
+          if (response.contains("ID_client")) {
             String data = response.substring(
-                response.indexOf("ID_cliente:") + "ID_cliente:".length);
+                response.indexOf("ID_client:") + "ID_client:".length);
             String posizione =
                 data.split(':')[1].trim(); // Trim whitespace and newlines
             print('Il cliente ' + widget.id + ' è alla posizione ' + posizione);
@@ -81,17 +81,17 @@ class _CatalogPageState extends State<CatalogPage> {
       while (true) {
         print('ho il carrello assegnato?' + assignedCart.toString());
         Socket socket = await Socket.connect(serverAddress, serverPort);
-        print('cliente:(id_carrello)$idCarrello:entra');
-        socket.write('cliente:$idCarrello:entra');
+        print('client:(id_carrello)$idCarrello:enter');
+        socket.write('client:$idCarrello:enter');
         print("CLIENTE:${widget.id}:ENTRA");
         // Ricevi una risposta dal server
         await for (var event in socket) {
           String response = String.fromCharCodes(event);
-          if (response.contains("ID_carrello")) {
+          if (response.contains("ID_cart")) {
             print(response);
-            // Estrai la parte della stringa dopo "ID_carrello:"
-            String idCarrelloResponse = response.substring(
-                response.indexOf("ID_carrello:") + "ID_carrello:".length);
+            // Estrai la parte della stringa dopo "ID_cart:"
+            String idCarrelloResponse = response
+                .substring(response.indexOf("ID_cart:") + "ID_cart:".length);
             if (idCarrelloResponse != '-1' && idCarrelloResponse != '-1\n') {
               print('al cliente è stato assegnato il carrello' +
                   idCarrelloResponse);
@@ -124,9 +124,9 @@ class _CatalogPageState extends State<CatalogPage> {
       // Connessione al server
 /*       print(
           'Connected to: ${socket.remoteAddress.address}:${socket.remotePort}'); */
-      // Il cliente si mette in coda
+      // Il cliente si mette in queue
       Socket socket = await Socket.connect(serverAddress, serverPort);
-      socket.write('catalogo');
+      socket.write('catalog');
       // Ricevi una risposta dal server
       await for (var event in socket) {
         String response = String.fromCharCodes(event);
@@ -183,9 +183,9 @@ class _CatalogPageState extends State<CatalogPage> {
           "e il prodotto è: " +
           product.id.toString());
       print(
-          "cliente:$idCarrello:aggiungi\n:${product.id}:${product.nome}:${product.prezzo}");
+          "client:$idCarrello:add\n:${product.id}:${product.nome}:${product.prezzo}");
       socket.write(
-          "cliente:$idCarrello:aggiungi\n:${product.id}:${product.nome}:${product.prezzo}");
+          "client:$idCarrello:add\n:${product.id}:${product.nome}:${product.prezzo}");
       // Ricevi una risposta dal server
       await for (var event in socket) {
         String response = String.fromCharCodes(event);
@@ -202,8 +202,8 @@ class _CatalogPageState extends State<CatalogPage> {
       // Connessione al server
       Socket socket = await Socket.connect(serverAddress, serverPort);
       print("l'id del carrello da cui rimuovere è: " + idCarrello);
-      print("cliente:$idCarrello:rimuovi\n:$idProdotto");
-      socket.write("cliente:$idCarrello:rimuovi\n:$idProdotto");
+      print("client:$idCarrello:remove\n:$idProdotto");
+      socket.write("client:$idCarrello:remove\n:$idProdotto");
       // Ricevi una risposta dal server
       await for (var event in socket) {
         String response = String.fromCharCodes(event);

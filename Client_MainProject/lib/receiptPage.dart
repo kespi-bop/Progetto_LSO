@@ -39,9 +39,9 @@ class _ReceiptPageState extends State<ReceiptPage> {
 
       print('il cliente con carrello ' +
           widget.idCarrello +
-          ' stampa il suo carrello:\n');
-      // Invia la richiesta di mettersi in coda alla cassa
-      String request = 'cliente:${widget.idCarrello}:stampa';
+          ' prints il suo carrello:\n');
+      // Invia la richiesta di mettersi in queue alla cassa
+      String request = 'client:${widget.idCarrello}:prints';
       socket.write(request);
 
       // Ricevi la risposta dal server

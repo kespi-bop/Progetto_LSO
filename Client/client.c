@@ -28,7 +28,6 @@ void joinCheckoutQueue(char *request, char *response);
 void pay(char *request, char *response);
 void printCatalog(char *request, char *response);
 void addById(char *request, char *response, int id_prodotto);
-void simulation(char *request, char *response);
 
 int id_cart = -1;
 int id_client = -1;
@@ -157,7 +156,7 @@ void addById(char *request, char *response, int id_product)
         product_price = 0.89;
         break;
     }
-    sprintf(request, "cliente:%d:aggiungi\n:%d:%s:%f", id_cart, id_product, product_name, product_price);
+    sprintf(request, "client:%d:add\n:%d:%s:%f", id_cart, id_product, product_name, product_price);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
@@ -216,13 +215,13 @@ void entrance(char *request, char *response)
     do
     {
         int sockfd = create_socket();
-        sprintf(request, "cliente:%d:ingresso\n", id_client);
+        sprintf(request, "client:%d:entrance\n", id_client);
         send_request(sockfd, request);
         read_response(sockfd, response);
         printf("%s\n", response);
         close(sockfd);
-        if (strstr(response, "ID_cliente") != NULL)
-            sscanf(response, "ID_cliente:%d:%d\n", &id_client, &position);
+        if (strstr(response, "ID_client") != NULL)
+            sscanf(response, "ID_client:%d:%d\n", &id_client, &position);
         sleep(2);
     } while (position > 0);
 }
@@ -232,12 +231,12 @@ void enter(char *request, char *response)
     do
     {
         int sockfd = create_socket();
-        sprintf(request, "cliente:%d:entra\n", id_cart);
+        sprintf(request, "client:%d:enter\n", id_cart);
         send_request(sockfd, request);
         read_response(sockfd, response);
         printf("%s\n", response);
-        if (strstr(response, "ID_carrello") != NULL)
-            sscanf(response, "ID_carrello:%d\n", &id_cart);
+        if (strstr(response, "ID_cart") != NULL)
+            sscanf(response, "ID_cart:%d\n", &id_cart);
         close(sockfd);
         sleep(2);
     } while (id_cart == -1);
@@ -246,7 +245,7 @@ void enter(char *request, char *response)
 void exitFromStore(char *request, char *response)
 {
     int sockfd = create_socket();
-    sprintf(request, "cliente:%d:esce\n", id_cart);
+    sprintf(request, "client:%d:exits\n", id_cart);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
@@ -256,7 +255,7 @@ void exitFromStore(char *request, char *response)
 void printCatalog(char *request, char *response)
 {
     int sockfd = create_socket();
-    sprintf(request, "catalogo\n");
+    sprintf(request, "catalog\n");
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
@@ -288,7 +287,7 @@ void removeItem(char *request, char *response)
     int id_product;
     printf("Insert the ID of the product to remove: ");
     scanf("%d", &id_product);
-    sprintf(request, "cliente:%d:rimuovi\n:%d", id_cart, id_product);
+    sprintf(request, "client:%d:remove\n:%d", id_cart, id_product);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
@@ -298,7 +297,7 @@ void removeItem(char *request, char *response)
 void printCart(char *request, char *response)
 {
     int sockfd = create_socket();
-    sprintf(request, "cliente:%d:stampa", id_cart);
+    sprintf(request, "client:%d:prints", id_cart);
     send_request(sockfd, request);
     read_response(sockfd, response);
     printf("%s\n", response);
@@ -311,7 +310,7 @@ void joinCheckoutQueue(char *request, char *response)
     do
     {
         int sockfd = create_socket();
-        sprintf(request, "cliente:%d:coda", id_cart);
+        sprintf(request, "client:%d:queue", id_cart);
         send_request(sockfd, request);
         read_response(sockfd, response);
         printf("%s\n", response);
@@ -325,11 +324,11 @@ void pay(char *request, char *response)
     do
     {
         int sockfd = create_socket();
-        sprintf(request, "cliente:%d:paga", id_cart);
+        sprintf(request, "client:%d:pay", id_cart);
         send_request(sockfd, request);
         read_response(sockfd, response);
         printf("%s\n", response);
         close(sockfd);
         sleep(2);
-    } while ((strcmp(response, "Carrello in elaborazione\n")) == 0);
+    } while ((strcmp(response, "processing cart\n")) == 0);
 }

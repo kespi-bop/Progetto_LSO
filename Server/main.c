@@ -114,16 +114,12 @@ void* process(void * ptr) {
     read_request(socket, request);
 
     // Processing the request
-    if(strstr(request, "cliente") != NULL) {
+    if(strstr(request, "client") != NULL) {
         //printf("[CLIENT] Request: %s\n", request);
         clientParser(request, response, carts, &checkout_queue, &entrance_queue);
         //printf("[SERVER] Response sent: %s", response);
-    } else if(strstr(request, "cassiere") != NULL) {
-        //printf("[CASHIER] Request: %s\n", request);
-        strcpy(response, "cassiere ok");
-        //printf("[SERVER] Response sent: %s", response);
-    }
-    else if(strstr(request, "catalogo") != NULL) {
+    } 
+    else if(strstr(request, "catalog") != NULL) {
         //printf("[ANONYMOUS] Request: %s\n", request);
         sendCatalog(response);
         //printf("[SERVER] Response sent: catalogo\n");
