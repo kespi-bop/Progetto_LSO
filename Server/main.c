@@ -10,7 +10,7 @@
 #include <sys/socket.h>
 
 #include "cart.h"
-#include "cliente.h"
+#include "client.h"
 #include "checkoutQueue.h"
 #include "config.h"
 #include "cashier.h"

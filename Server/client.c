@@ -1,4 +1,4 @@
-#include "cliente.h"
+#include "client.h"
 
 extern pthread_mutex_t mutex_clients_number;
 extern pthread_mutex_t mutex_ticket_snail;
